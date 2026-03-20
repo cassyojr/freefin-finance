@@ -1,0 +1,3219 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Gastos</title>
+
+    <script>
+      // Apply saved theme before paint to avoid flash
+      (function () {
+        const t = localStorage.getItem("dashboard-theme");
+        if (t === "dark")
+          document.documentElement.setAttribute("data-theme", "dark");
+      })();
+    </script>
+
+    <link rel="stylesheet" href="styles/style.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  </head>
+
+  <body>
+    <div class="shell">
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <h1>Dashboard de Gastos</h1>
+          </div>
+
+          <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="dashboard" type="button">
+              Dashboard
+            </button>
+            <button class="tab-btn" data-tab="despesas-fixas" type="button">
+              Despesas Fixas
+            </button>
+            <button class="tab-btn" data-tab="receitas-fixas" type="button">
+              Receitas Fixas
+            </button>
+            <div class="settings-menu" id="settingsMenu">
+              <button
+                class="settings-cog"
+                id="settingsCogBtn"
+                type="button"
+                title="Configurações"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" />
+                  <path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+                  <path d="M12 2v2" />
+                  <path d="M12 22v-2" />
+                  <path d="m17 20.66-1-1.73" />
+                  <path d="M11 10.27 7 3.34" />
+                  <path d="m20.66 17-1.73-1" />
+                  <path d="m3.34 7 1.73 1" />
+                  <path d="M14 12h8" />
+                  <path d="M2 12h2" />
+                  <path d="m20.66 7-1.73 1" />
+                  <path d="m3.34 17 1.73-1" />
+                  <path d="m17 3.34-1 1.73" />
+                  <path d="m11 13.73-4 6.93" />
+                </svg>
+              </button>
+              <div class="settings-dropdown" id="settingsDropdown" role="menu">
+                <div class="settings-dropdown-label">Navegar</div>
+                <button
+                  class="settings-option"
+                  data-tab-nav="arquivos"
+                  type="button"
+                  role="menuitem"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                    />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  <span>Arquivos</span>
+                </button>
+                <button
+                  class="settings-option"
+                  data-tab-nav="categorias"
+                  type="button"
+                  role="menuitem"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 20h16" />
+                    <path d="m6 16 6-12 6 12" />
+                    <path d="M8 12h8" />
+                  </svg>
+                  <span>Categorias</span>
+                </button>
+                <div class="settings-dropdown-label" style="margin-top: 4px">
+                  Tema
+                </div>
+                <button
+                  class="settings-option"
+                  data-theme-set="light"
+                  type="button"
+                  role="menuitemradio"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="4" />
+                    <path
+                      d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+                    />
+                  </svg>
+                  <span>Claro</span>
+                  <span class="settings-option-check" id="checkLight">✓</span>
+                </button>
+                <button
+                  class="settings-option"
+                  data-theme-set="dark"
+                  type="button"
+                  role="menuitemradio"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                  </svg>
+                  <span>Escuro</span>
+                  <span class="settings-option-check" id="checkDark">✓</span>
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </section>
+
+      <div id="tab-dashboard" class="tab-panel">
+        <section class="summary-grid" style="margin-top: 20px">
+          <article class="card">
+            <div class="metric-label">Total filtrado</div>
+            <div class="metric-value" id="filteredTotal">R$ 0,00</div>
+            <div class="metric-detail" id="filteredCount">
+              0 lançamentos visíveis
+            </div>
+            <div
+              class="metric-detail hidden"
+              id="creditsTotal"
+              style="color: var(--ok); margin-top: 4px"
+            ></div>
+          </article>
+
+          <article class="card">
+            <div class="section-head" style="margin-bottom: 10px">
+              <div class="metric-label">Média de custo de vida</div>
+              <div class="toggle-group">
+                <button class="active" data-average-mode="mes" type="button">
+                  Mês
+                </button>
+                <button data-average-mode="ano" type="button">Ano</button>
+              </div>
+            </div>
+            <div class="metric-value" id="averageValue">R$ 0,00</div>
+            <div class="metric-detail" id="averageDetail">
+              Sem dados carregados
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="metric-label">Despesas fixas mensais</div>
+            <div class="metric-value" id="fixedCostsTotal">R$ 0,00</div>
+            <div class="metric-detail" id="fixedCostsDetail">
+              Nenhuma cadastrada
+            </div>
+            <div style="margin-top: 12px">
+              <button
+                class="button-ghost"
+                type="button"
+                style="font-size: 0.85rem; padding: 6px 14px"
+                onclick="switchTab('despesas-fixas')"
+              >
+                Gerenciar →
+              </button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="metric-label">Receitas fixas mensais</div>
+            <div
+              class="metric-value"
+              id="fixedIncomeTotal"
+              style="color: var(--ok)"
+            >
+              R$ 0,00
+            </div>
+            <div class="metric-detail" id="fixedIncomeDetail">
+              Nenhuma cadastrada
+            </div>
+            <div style="margin-top: 12px">
+              <button
+                class="button-ghost"
+                type="button"
+                style="font-size: 0.85rem; padding: 6px 14px"
+                onclick="switchTab('receitas-fixas')"
+              >
+                Gerenciar →
+              </button>
+            </div>
+          </article>
+        </section>
+
+        <section class="content-grid" style="margin-top: 20px">
+          <article class="table-card">
+            <div class="section-head">
+              <h2>Distribuição por categoria</h2>
+              <span class="chart-note"
+                >Clique em uma fatia para filtrar a tabela.</span
+              >
+            </div>
+            <div class="chart-wrap">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="section-head">
+              <h3>Resumo por período</h3>
+              <span class="muted">Baseado no mês/ano da fatura</span>
+            </div>
+            <div id="periodSummary"></div>
+          </article>
+        </section>
+
+        <section class="panel" style="margin-top: 20px">
+          <div class="section-head">
+            <h2>Filtros</h2>
+            <span class="muted" id="activeFilterSummary"
+              >Sem filtros aplicados</span
+            >
+          </div>
+
+          <div class="filters">
+            <label>
+              Mês da fatura
+              <select id="monthFilter">
+                <option value="">Todos</option>
+              </select>
+            </label>
+
+            <label>
+              Ano da fatura
+              <select id="yearFilter">
+                <option value="">Todos</option>
+              </select>
+            </label>
+
+            <label>
+              Categoria
+              <select id="categoryFilter">
+                <option value="">Todas</option>
+              </select>
+            </label>
+
+            <label>
+              Buscar estabelecimento
+              <input
+                id="searchFilter"
+                type="text"
+                placeholder="Ex.: Panvel, Amazon, Posto"
+              />
+            </label>
+
+            <label class="checkbox-row">
+              <input id="installmentOnlyFilter" type="checkbox" />
+              Apenas parcelados
+            </label>
+          </div>
+        </section>
+
+        <section class="table-card" style="margin-top: 20px">
+          <details class="collapsible">
+            <summary>
+              <div>
+                <h2 style="display: inline">Lançamentos</h2>
+                <span class="muted" style="margin-left: 12px; font-size: 0.9rem"
+                  >A tabela responde aos filtros e ao clique no gráfico.</span
+                >
+              </div>
+              <span class="collapse-icon">▼</span>
+            </summary>
+            <div style="margin-bottom: 14px">
+              <div class="toggle-group" id="tableTabGroup">
+                <button class="active" id="tabLancamentos" type="button">
+                  Lançamentos
+                </button>
+                <button id="tabCreditos" type="button">
+                  Créditos e Estornos
+                </button>
+              </div>
+            </div>
+            <div id="tableContainer"></div>
+            <div id="creditsContainer" class="hidden"></div>
+          </details>
+        </section>
+
+        <section class="card" style="margin-top: 20px">
+          <details class="collapsible">
+            <summary>
+              <div>
+                <h2 style="display: inline">Parcelamentos</h2>
+                <span class="muted" style="margin-left: 12px; font-size: 0.9rem"
+                  >Agrupados por série dentro das faturas carregadas.</span
+                >
+              </div>
+              <span class="collapse-icon">▼</span>
+            </summary>
+            <div id="installmentGroups"></div>
+          </details>
+        </section>
+      </div>
+      <!-- end #tab-dashboard -->
+
+      <div id="tab-categorias" class="tab-panel hidden">
+        <section class="rules-card" style="margin-top: 20px">
+          <div class="section-head" style="margin-bottom: 16px">
+            <div>
+              <h3>Mapa de categorias</h3>
+              <div class="muted" style="margin-top: 4px; font-size: 0.9rem">
+                Edite regras no formato <code>palavra=Categoria</code>
+              </div>
+            </div>
+          </div>
+          <label>
+            Regras personalizadas
+            <textarea id="rulesEditor"></textarea>
+          </label>
+          <div class="hero-actions" style="margin-top: 12px">
+            <button class="button" id="saveRulesBtn" type="button">
+              Salvar regras
+            </button>
+            <button class="button-ghost" id="resetRulesBtn" type="button">
+              Restaurar padrão
+            </button>
+          </div>
+          <p class="footer-note">
+            As regras são salvas no navegador deste projeto. Se uma compra não
+            encaixar em nada, ela fica em <strong>Outros</strong>.
+          </p>
+        </section>
+      </div>
+      <!-- end #tab-categorias -->
+
+      <div id="tab-despesas-fixas" class="tab-panel hidden">
+        <section class="rules-card" style="margin-top: 20px">
+          <div class="section-head" style="margin-bottom: 16px">
+            <div>
+              <h3>Despesas Fixas Mensais</h3>
+              <div class="muted" style="margin-top: 4px; font-size: 0.9rem">
+                Despesas recorrentes fora do cartão: aluguel, condomínio, água,
+                luz, internet, etc.
+              </div>
+            </div>
+          </div>
+          <div class="fixed-add-row">
+            <label style="flex: 1; min-width: 200px">
+              Nome
+              <input
+                id="fixedNameInput"
+                type="text"
+                placeholder="Ex.: Aluguel, Água, Condomínio"
+              />
+              <span class="fixed-input-error" id="fixedNameError"></span>
+            </label>
+            <label style="min-width: 160px">
+              Valor médio mensal (R$)
+              <input
+                id="fixedAmountInput"
+                type="text"
+                placeholder="R$ 0,00"
+                inputmode="numeric"
+              />
+              <span class="fixed-input-error" id="fixedAmountError"></span>
+            </label>
+            <button class="button" id="fixedAddBtn" type="button">
+              + Adicionar
+            </button>
+          </div>
+          <div id="fixedCostsList" style="margin-top: 20px"></div>
+          <p class="footer-note">
+            Os valores são tratados como médias mensais e somados
+            automaticamente à média de custo de vida no dashboard. Salvos no
+            navegador.
+          </p>
+        </section>
+      </div>
+      <!-- end #tab-despesas-fixas -->
+
+      <div id="tab-receitas-fixas" class="tab-panel hidden">
+        <section class="rules-card" style="margin-top: 20px">
+          <div class="section-head" style="margin-bottom: 16px">
+            <div>
+              <h3>Receitas Fixas Mensais</h3>
+              <div class="muted" style="margin-top: 4px; font-size: 0.9rem">
+                Receitas recorrentes mensais: salário, aluguel recebido, pensão,
+                renda extra fixa, etc.
+              </div>
+            </div>
+          </div>
+          <div class="fixed-add-row">
+            <label style="flex: 1; min-width: 200px">
+              Nome
+              <input
+                id="fixedIncomeNameInput"
+                type="text"
+                placeholder="Ex.: Salário, Aluguel recebido"
+              />
+              <span class="fixed-input-error" id="fixedIncomeNameError"></span>
+            </label>
+            <label style="min-width: 160px">
+              Valor médio mensal (R$)
+              <input
+                id="fixedIncomeAmountInput"
+                type="text"
+                placeholder="R$ 0,00"
+                inputmode="numeric"
+              />
+              <span
+                class="fixed-input-error"
+                id="fixedIncomeAmountError"
+              ></span>
+            </label>
+            <button class="button" id="fixedIncomeAddBtn" type="button">
+              + Adicionar
+            </button>
+          </div>
+          <div id="fixedIncomeList" style="margin-top: 20px"></div>
+          <p class="footer-note">
+            Os valores são tratados como médias mensais e subtraídos
+            automaticamente da média de custo de vida no dashboard. Salvos no
+            navegador.
+          </p>
+        </section>
+      </div>
+      <!-- end #tab-receitas-fixas -->
+
+      <div id="tab-arquivos" class="tab-panel hidden">
+        <section class="card" style="margin-top: 20px">
+          <div class="section-head">
+            <h3>Importar faturas</h3>
+          </div>
+          <div class="hero-actions">
+            <button class="button hidden" id="openUploadBtn" type="button">
+              Escolher PDFs manualmente
+            </button>
+            <button class="button-ghost" id="reloadProjectBtn" type="button">
+              Recarregar PDFs do projeto
+            </button>
+          </div>
+          <input
+            class="hidden"
+            id="fileInput"
+            type="file"
+            accept="application/pdf"
+            multiple
+          />
+          <div class="chips" style="margin-top: 16px" id="statusBadges"></div>
+        </section>
+
+        <section class="card" style="margin-top: 20px">
+          <div class="section-head" style="margin-bottom: 16px">
+            <div>
+              <h3>Conciliação por arquivo</h3>
+              <div
+                class="muted"
+                id="loadedPeriods"
+                style="margin-top: 4px; font-size: 0.9rem"
+              >
+                Nenhuma fatura processada
+              </div>
+            </div>
+            <div style="text-align: right">
+              <div
+                class="metric-value"
+                style="font-size: 2rem"
+                id="loadedFilesCount"
+              >
+                0
+              </div>
+              <div class="metric-label">arquivos</div>
+            </div>
+          </div>
+          <div id="reconciliationList"></div>
+        </section>
+      </div>
+      <!-- end #tab-arquivos -->
+    </div>
+
+    <!-- Confirm delete modal -->
+    <div class="modal-backdrop hidden" id="confirmDeleteBackdrop">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        style="width: min(360px, 100%); gap: 14px"
+      >
+        <p class="modal-title" id="confirmDeleteTitle">Remover item</p>
+        <p class="modal-merchant" id="confirmDeleteBody"></p>
+        <div class="modal-actions">
+          <button
+            class="button-ghost"
+            type="button"
+            id="confirmDeleteCancelBtn"
+          >
+            Cancelar
+          </button>
+          <button
+            class="button"
+            type="button"
+            id="confirmDeleteOkBtn"
+            style="background: var(--danger); border-color: var(--danger)"
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category assignment modal -->
+    <div class="modal-backdrop hidden" id="categoryModalBackdrop">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <div>
+          <p class="modal-title" id="modalTitle">Editar categoria</p>
+          <p class="modal-merchant" id="modalMerchant"></p>
+        </div>
+        <div>
+          <div class="modal-section-label">Escolher categoria existente</div>
+          <div class="category-chips" id="modalCategoryChips"></div>
+        </div>
+        <hr class="modal-divider" />
+        <div>
+          <div class="modal-section-label">Adicionar nova regra ao mapa</div>
+          <div class="modal-rule-row">
+            <label style="display: grid; gap: 4px">
+              Palavra-chave
+              <input type="text" id="modalKeyword" placeholder="ex.: netflix" />
+            </label>
+            <span style="padding-top: 20px">=</span>
+            <label style="display: grid; gap: 4px">
+              Categoria
+              <input
+                type="text"
+                id="modalNewCategory"
+                placeholder="ex.: Entretenimento"
+              />
+            </label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="button-ghost" type="button" id="modalCancelBtn">
+            Cancelar
+          </button>
+          <button class="button" type="button" id="modalSaveBtn">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Auto-generate MM-YYYY.pdf candidates from Jan 2023 up to current month.
+      // fetch() will silently fail for files that don't exist in the folder.
+      // ── Backend integration (Phase 1) ─────────────────────────────────────
+      // When the backend is running, all PDF imports are sent to it and the
+      // full transaction list is loaded from it on startup.
+      // If the backend is unreachable (offline/not started), the app falls
+      // back to the original local PDF.js parsing path automatically.
+      const BACKEND_URL = "http://127.0.0.1:8000";
+      let backendAvailable = false;
+
+      async function checkBackend() {
+        try {
+          const resp = await fetch(`${BACKEND_URL}/api/health`, {
+            signal: AbortSignal.timeout(1500),
+          });
+          backendAvailable = resp.ok;
+        } catch {
+          backendAvailable = false;
+        }
+      }
+
+      async function loadFromBackend() {
+        try {
+          setStatusMessage("Carregando dados do servidor...");
+          const [stmtResp, txResp] = await Promise.all([
+            fetch(`${BACKEND_URL}/api/statements`),
+            fetch(`${BACKEND_URL}/api/transactions`),
+          ]);
+          if (!stmtResp.ok || !txResp.ok)
+            throw new Error("Resposta inválida do servidor.");
+
+          const statements = await stmtResp.json();
+          const transactions = await txResp.json();
+
+          if (!statements.length) {
+            // Nothing imported yet — try auto-loading the pdfs/ folder into
+            // the backend, which will then populate the DB and re-load.
+            await tryAutoLoadProjectPdfs();
+            return;
+          }
+
+          fileSummaries = statements.map((s) => ({
+            fileName: s.fileName,
+            statementKey: s.statementKey,
+            label: s.label,
+            officialTotal: s.officialTotal,
+            parsedTotal: s.parsedTotal,
+            diff: s.diff,
+          }));
+          allTransactions = transactions;
+
+          // Re-apply saved keyword rules so any category assignments persist after refresh.
+          reapplyCategories(); // also calls hydrateFilters() + applyFilters() internally
+          setStatusMessage(
+            `${fileSummaries.length} fatura(s) carregada(s).`,
+            "ok",
+          );
+          switchTab("dashboard");
+        } catch (err) {
+          console.error("Backend load failed, falling back to local:", err);
+          backendAvailable = false;
+          await tryAutoLoadProjectPdfs();
+        }
+      }
+
+      async function importPdfSourcesViaBackend(sources, replaceExisting) {
+        setStatusMessage(
+          `Enviando ${sources.length} arquivo(s) para o servidor...`,
+        );
+        for (const source of sources) {
+          const fd = new FormData();
+          fd.append(
+            "file",
+            new Blob([source.bytes], { type: "application/pdf" }),
+            source.name,
+          );
+          try {
+            const resp = await fetch(`${BACKEND_URL}/api/statements`, {
+              method: "POST",
+              body: fd,
+            });
+            if (resp.status === 409) {
+              console.log(`[${source.name}] Já importado, ignorando.`);
+              continue; // already in DB — fine
+            }
+            if (!resp.ok) {
+              const err = await resp.json().catch(() => ({}));
+              throw new Error(err.detail || `Falha ao importar ${source.name}`);
+            }
+          } catch (err) {
+            console.error(`Falha ao importar ${source.name}:`, err);
+            setStatusMessage(
+              `Falha ao importar ${source.name}: ${err.message}`,
+              "error",
+            );
+          }
+        }
+        // Reload full state from backend after all uploads
+        await loadFromBackend();
+      }
+      // ── End backend integration ───────────────────────────────────────────
+
+      const PROJECT_PDF_CANDIDATES = (() => {
+        const candidates = [];
+        const now = new Date();
+        const endYear = now.getFullYear();
+        const endMonth = now.getMonth() + 1; // 1-based
+        for (let year = 2023; year <= endYear; year++) {
+          const lastMonth = year === endYear ? endMonth : 12;
+          for (let month = 1; month <= lastMonth; month++) {
+            candidates.push(
+              `pdfs/${year}-${String(month).padStart(2, "0")}.pdf`,
+            );
+          }
+        }
+        return candidates;
+      })();
+      const MONTH_LABELS = {
+        "01": "Janeiro",
+        "02": "Fevereiro",
+        "03": "Março",
+        "04": "Abril",
+        "05": "Maio",
+        "06": "Junho",
+        "07": "Julho",
+        "08": "Agosto",
+        "09": "Setembro",
+        10: "Outubro",
+        11: "Novembro",
+        12: "Dezembro",
+      };
+      const DEFAULT_CATEGORY_RULES = [
+        { keyword: "panvel", category: "Saúde" },
+        { keyword: "drogaria", category: "Saúde" },
+        { keyword: "farmacia", category: "Saúde" },
+        { keyword: "amais", category: "Saúde" },
+        { keyword: "vaccine", category: "Saúde" },
+        { keyword: "pague menos", category: "Saúde" },
+        { keyword: "clinica", category: "Saúde" },
+        { keyword: "hospital", category: "Saúde" },
+        { keyword: "atacadao", category: "Alimentação" },
+        { keyword: "festval", category: "Alimentação" },
+        { keyword: "edvilson", category: "Alimentação" },
+        { keyword: "quero cafete", category: "Alimentação" },
+        { keyword: "bd alimentos", category: "Alimentação" },
+        { keyword: "mc donalds", category: "Alimentação" },
+        { keyword: "grossi", category: "Alimentação" },
+        { keyword: "sfiha", category: "Alimentação" },
+        { keyword: "bier hoff", category: "Alimentação" },
+        { keyword: "condor", category: "Alimentação" },
+        { keyword: "bonna", category: "Alimentação" },
+        { keyword: "jardim dos", category: "Alimentação" },
+        { keyword: "ifood", category: "Delivery" },
+        { keyword: "amazon", category: "Compras Online" },
+        { keyword: "mercadolivre", category: "Compras Online" },
+        { keyword: "webcontinent", category: "Compras Online" },
+        { keyword: "havan", category: "Vestuário" },
+        { keyword: "baby chic", category: "Vestuário" },
+        { keyword: "lady lili", category: "Vestuário" },
+        { keyword: "havaianas", category: "Vestuário" },
+        { keyword: "bekos", category: "Vestuário" },
+        { keyword: "damarate", category: "Vestuário" },
+        { keyword: "lupo", category: "Vestuário" },
+        { keyword: "oboticar", category: "Vestuário" },
+        { keyword: "decathlon", category: "Hobby / Esporte" },
+        { keyword: "pet shop", category: "Hobby / Esporte" },
+        { keyword: "evo pet", category: "Hobby / Esporte" },
+        { keyword: "octoshop", category: "Hobby / Esporte" },
+        { keyword: "academia", category: "Hobby / Esporte" },
+        { keyword: "leroy", category: "Hobby / Esporte" },
+        { keyword: "digital foto", category: "Hobby / Esporte" },
+        { keyword: "auto posto", category: "Transporte" },
+        { keyword: "petro", category: "Transporte" },
+        { keyword: "estacionamen", category: "Transporte" },
+        { keyword: "estapar", category: "Transporte" },
+        { keyword: "shellbox", category: "Transporte" },
+        { keyword: "posto", category: "Transporte" },
+        { keyword: "netflix", category: "Entretenimento" },
+        { keyword: "steam", category: "Entretenimento" },
+        { keyword: "youtube", category: "Entretenimento" },
+        { keyword: "trademap", category: "Investimentos" },
+        { keyword: "suno", category: "Investimentos" },
+        { keyword: "azul", category: "Viagem" },
+        { keyword: "ton", category: "Serviços" },
+        { keyword: "luiz fabiano", category: "Serviços" },
+        { keyword: "iof", category: "Impostos" },
+        { keyword: "anuidade", category: "Impostos" },
+        { keyword: "imposto", category: "Impostos" },
+      ];
+      const CURRENCY_FORMATTER = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+
+      let allTransactions = [];
+      let filteredTransactions = [];
+      let netFilteredTransactions = []; // baseFiltered (debits + credits) — drives period summary and total
+      let fileSummaries = [];
+      let categoryChart;
+      let selectedAverageMode = "mes";
+      let selectedChartCategory = "";
+      let tableSort = { col: "date", dir: "desc" };
+      let tablePage = 1;
+      let tablePageSize = 20;
+      let installmentPage = 1;
+      let installmentPageSize = 20;
+      let fixedCosts = [];
+      let fixedIncome = [];
+
+      const elements = {
+        fileInput: document.getElementById("fileInput"),
+        reloadProjectBtn: document.getElementById("reloadProjectBtn"),
+        openUploadBtn: document.getElementById("openUploadBtn"),
+        statusBadges: document.getElementById("statusBadges"),
+        monthFilter: document.getElementById("monthFilter"),
+        yearFilter: document.getElementById("yearFilter"),
+        categoryFilter: document.getElementById("categoryFilter"),
+        searchFilter: document.getElementById("searchFilter"),
+        installmentOnlyFilter: document.getElementById("installmentOnlyFilter"),
+        creditsContainer: document.getElementById("creditsContainer"),
+        tabLancamentos: document.getElementById("tabLancamentos"),
+        tabCreditos: document.getElementById("tabCreditos"),
+        activeFilterSummary: document.getElementById("activeFilterSummary"),
+        filteredTotal: document.getElementById("filteredTotal"),
+        filteredCount: document.getElementById("filteredCount"),
+        averageValue: document.getElementById("averageValue"),
+        averageDetail: document.getElementById("averageDetail"),
+        loadedFilesCount: document.getElementById("loadedFilesCount"),
+        loadedPeriods: document.getElementById("loadedPeriods"),
+
+        reconciliationList: document.getElementById("reconciliationList"),
+        periodSummary: document.getElementById("periodSummary"),
+        tableContainer: document.getElementById("tableContainer"),
+        installmentGroups: document.getElementById("installmentGroups"),
+        rulesEditor: document.getElementById("rulesEditor"),
+        saveRulesBtn: document.getElementById("saveRulesBtn"),
+        resetRulesBtn: document.getElementById("resetRulesBtn"),
+        categoryModalBackdrop: document.getElementById("categoryModalBackdrop"),
+        modalMerchant: document.getElementById("modalMerchant"),
+        modalCategoryChips: document.getElementById("modalCategoryChips"),
+        modalKeyword: document.getElementById("modalKeyword"),
+        modalNewCategory: document.getElementById("modalNewCategory"),
+        modalCancelBtn: document.getElementById("modalCancelBtn"),
+        modalSaveBtn: document.getElementById("modalSaveBtn"),
+        fixedCostsTotal: document.getElementById("fixedCostsTotal"),
+        fixedCostsDetail: document.getElementById("fixedCostsDetail"),
+        fixedIncomeTotal: document.getElementById("fixedIncomeTotal"),
+        fixedIncomeDetail: document.getElementById("fixedIncomeDetail"),
+      };
+
+      boot();
+
+      async function boot() {
+        bindEvents();
+        updateThemeToggleUI();
+        renderEmptyState();
+        // Phase 1: prefer backend when available, fall back to local parsing
+        await checkBackend();
+        if (backendAvailable) {
+          await migrateLocalStorageRulesToBackend();
+          await loadRulesEditor();
+          await loadFromBackend();
+          await migrateLocalStorageFixedCostsToBackend();
+          await migrateLocalStorageFixedIncomeToBackend();
+        } else {
+          await loadRulesEditor();
+          await tryAutoLoadProjectPdfs();
+        }
+        await loadFixedCosts();
+        renderFixedCostsCard();
+        renderFixedCostsList();
+        await loadFixedIncome();
+        renderFixedIncomeCard();
+        renderFixedIncomeList();
+        renderAverages();
+      }
+
+      function setTheme(theme) {
+        if (theme === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        } else {
+          document.documentElement.removeAttribute("data-theme");
+        }
+        localStorage.setItem("dashboard-theme", theme);
+        updateThemeToggleUI();
+      }
+
+      function updateThemeToggleUI() {
+        const isDark =
+          document.documentElement.getAttribute("data-theme") === "dark";
+        const checkLight = document.getElementById("checkLight");
+        const checkDark = document.getElementById("checkDark");
+        if (checkLight)
+          checkLight.style.visibility = isDark ? "hidden" : "visible";
+        if (checkDark)
+          checkDark.style.visibility = isDark ? "visible" : "hidden";
+      }
+
+      function bindEvents() {
+        const cogBtn = document.getElementById("settingsCogBtn");
+        const dropdown = document.getElementById("settingsDropdown");
+        const menu = document.getElementById("settingsMenu");
+
+        cogBtn?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = menu.classList.toggle("open");
+          cogBtn.setAttribute("aria-expanded", isOpen);
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!menu?.contains(e.target)) {
+            menu?.classList.remove("open");
+            cogBtn?.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            menu?.classList.remove("open");
+            cogBtn?.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        dropdown?.querySelectorAll("[data-theme-set]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            setTheme(btn.dataset.themeSet);
+            menu?.classList.remove("open");
+            cogBtn?.setAttribute("aria-expanded", "false");
+          });
+        });
+
+        dropdown?.querySelectorAll("[data-tab-nav]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            switchTab(btn.dataset.tabNav);
+            menu?.classList.remove("open");
+            cogBtn?.setAttribute("aria-expanded", "false");
+          });
+        });
+
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            switchTab(btn.dataset.tab);
+            if (btn.dataset.tab === "despesas-fixas") {
+              setTimeout(
+                () => document.getElementById("fixedNameInput")?.focus(),
+                50,
+              );
+            } else if (btn.dataset.tab === "receitas-fixas") {
+              setTimeout(
+                () => document.getElementById("fixedIncomeNameInput")?.focus(),
+                50,
+              );
+            }
+          });
+        });
+
+        elements.reloadProjectBtn.addEventListener("click", async () => {
+          await tryAutoLoadProjectPdfs(true);
+        });
+
+        elements.openUploadBtn.addEventListener("click", () => {
+          elements.fileInput.click();
+        });
+
+        elements.fileInput.addEventListener("change", async (event) => {
+          const files = Array.from(event.target.files || []);
+          if (!files.length) return;
+          await loadManualFiles(files);
+          event.target.value = "";
+        });
+
+        [
+          elements.monthFilter,
+          elements.yearFilter,
+          elements.categoryFilter,
+          elements.searchFilter,
+          elements.installmentOnlyFilter,
+        ].forEach((element) => {
+          element.addEventListener("input", applyFilters);
+          element.addEventListener("change", applyFilters);
+        });
+
+        document.querySelectorAll("[data-average-mode]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedAverageMode = button.dataset.averageMode;
+            document.querySelectorAll("[data-average-mode]").forEach((item) => {
+              item.classList.toggle(
+                "active",
+                item.dataset.averageMode === selectedAverageMode,
+              );
+            });
+            renderAverages();
+            renderPeriodSummary();
+          });
+        });
+
+        elements.saveRulesBtn.addEventListener("click", async () => {
+          await saveRulesToBackend(elements.rulesEditor.value);
+          reapplyCategories();
+        });
+
+        elements.resetRulesBtn.addEventListener("click", async () => {
+          await saveRulesToBackend("");
+          await loadRulesEditor();
+          reapplyCategories();
+        });
+
+        elements.modalCancelBtn.addEventListener("click", closeCategoryModal);
+        elements.categoryModalBackdrop.addEventListener("click", (e) => {
+          if (e.target === elements.categoryModalBackdrop) closeCategoryModal();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeCategoryModal();
+        });
+
+        elements.tabLancamentos.addEventListener("click", () => {
+          elements.tabLancamentos.classList.add("active");
+          elements.tabCreditos.classList.remove("active");
+          elements.tableContainer.classList.remove("hidden");
+          elements.creditsContainer.classList.add("hidden");
+        });
+
+        elements.tabCreditos.addEventListener("click", () => {
+          elements.tabCreditos.classList.add("active");
+          elements.tabLancamentos.classList.remove("active");
+          elements.creditsContainer.classList.remove("hidden");
+          elements.tableContainer.classList.add("hidden");
+        });
+
+        // Fixed costs tab
+        document
+          .getElementById("fixedAddBtn")
+          .addEventListener("click", addFixedCost);
+        ["fixedNameInput", "fixedAmountInput"].forEach((id) => {
+          document.getElementById(id).addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addFixedCost();
+            }
+          });
+        });
+        document
+          .getElementById("fixedAmountInput")
+          .addEventListener("input", applyBrlMask);
+
+        // Global Enter handler: when despesas-fixas tab is active, pressing Enter
+        // anywhere (outside inputs) triggers addFixedCost with focus/validation
+        document.addEventListener("keydown", (e) => {
+          if (e.key !== "Enter") return;
+          const panel = document.getElementById("tab-despesas-fixas");
+          if (!panel || panel.classList.contains("hidden")) return;
+          const active = document.activeElement;
+          const isInAddField =
+            active &&
+            (active.id === "fixedNameInput" ||
+              active.id === "fixedAmountInput");
+          const isInEditField =
+            active &&
+            (active.classList.contains("fixed-edit-name") ||
+              active.classList.contains("fixed-edit-amount"));
+          if (!isInAddField && !isInEditField) {
+            e.preventDefault();
+            addFixedCost();
+          }
+        });
+
+        // Fixed income tab
+        document
+          .getElementById("fixedIncomeAddBtn")
+          .addEventListener("click", addFixedIncome);
+        ["fixedIncomeNameInput", "fixedIncomeAmountInput"].forEach((id) => {
+          document.getElementById(id).addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addFixedIncome();
+            }
+          });
+        });
+        document
+          .getElementById("fixedIncomeAmountInput")
+          .addEventListener("input", applyBrlMask);
+
+        // Global Enter handler: when receitas-fixas tab is active, pressing Enter
+        // anywhere (outside inputs) triggers addFixedIncome
+        document.addEventListener("keydown", (e) => {
+          if (e.key !== "Enter") return;
+          const panel = document.getElementById("tab-receitas-fixas");
+          if (!panel || panel.classList.contains("hidden")) return;
+          const active = document.activeElement;
+          const isInAddField =
+            active &&
+            (active.id === "fixedIncomeNameInput" ||
+              active.id === "fixedIncomeAmountInput");
+          const isInEditField =
+            active &&
+            (active.classList.contains("fixed-edit-name") ||
+              active.classList.contains("fixed-edit-amount"));
+          if (!isInAddField && !isInEditField) {
+            e.preventDefault();
+            addFixedIncome();
+          }
+        });
+      }
+
+      function openCategoryModal(item) {
+        // Pre-fill merchant and suggest keyword from the original merchant name.
+        elements.modalMerchant.textContent = `${item.merchant}  •  ${item.purchaseDate}  •  ${formatCurrency(item.value)}`;
+        elements.modalKeyword.value = normalizeText(item.merchant)
+          .split(" ")
+          .slice(0, 2)
+          .join(" ");
+        elements.modalNewCategory.value = "";
+
+        // Build chip list from all known categories (rules + already-in-use).
+        const ruleCategories = getActiveRules().map((r) => r.category);
+        const txCategories = allTransactions.map((t) => t.category);
+        const allCategories = [...new Set([...ruleCategories, ...txCategories])]
+          .filter(Boolean)
+          .sort();
+
+        elements.modalCategoryChips.innerHTML = allCategories
+          .map((cat) => {
+            const active = cat === item.category ? " selected" : "";
+            return `<button type="button" class="category-chip${active}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`;
+          })
+          .join("");
+
+        // Chip click: select it and auto-fill the new-category input.
+        elements.modalCategoryChips
+          .querySelectorAll(".category-chip")
+          .forEach((chip) => {
+            chip.addEventListener("click", () => {
+              elements.modalCategoryChips
+                .querySelectorAll(".category-chip")
+                .forEach((c) => c.classList.remove("selected"));
+              chip.classList.add("selected");
+              elements.modalNewCategory.value = chip.dataset.cat;
+            });
+          });
+
+        // Wire save for this modal opening.
+        const saveHandler = async () => {
+          const keyword = elements.modalKeyword.value.trim();
+          const category =
+            elements.modalNewCategory.value.trim() ||
+            elements.modalCategoryChips.querySelector(".category-chip.selected")
+              ?.dataset.cat ||
+            "";
+          if (!keyword || !category) return;
+
+          const current = elements.rulesEditor.value.trim();
+          const newLine = `${keyword}=${category}`;
+          const updated = current ? `${newLine}\n${current}` : newLine;
+          await saveRulesToBackend(updated);
+          await loadRulesEditor();
+          reapplyCategories();
+          closeCategoryModal();
+        };
+
+        // Replace previous listener to avoid stacking.
+        const newSaveBtn = elements.modalSaveBtn.cloneNode(true);
+        elements.modalSaveBtn.replaceWith(newSaveBtn);
+        elements.modalSaveBtn = document.getElementById("modalSaveBtn");
+        elements.modalSaveBtn.addEventListener("click", saveHandler);
+
+        elements.categoryModalBackdrop.classList.remove("hidden");
+      }
+
+      function closeCategoryModal() {
+        elements.categoryModalBackdrop.classList.add("hidden");
+      }
+
+      function confirmDelete(title, body, onConfirm) {
+        const backdrop = document.getElementById("confirmDeleteBackdrop");
+        document.getElementById("confirmDeleteTitle").textContent = title;
+        document.getElementById("confirmDeleteBody").textContent = body;
+        backdrop.classList.remove("hidden");
+
+        const okBtn = document.getElementById("confirmDeleteOkBtn");
+        const cancelBtn = document.getElementById("confirmDeleteCancelBtn");
+
+        const close = () => backdrop.classList.add("hidden");
+
+        const newOk = okBtn.cloneNode(true);
+        okBtn.replaceWith(newOk);
+        newOk.addEventListener("click", () => {
+          close();
+          onConfirm();
+        });
+
+        const newCancel = cancelBtn.cloneNode(true);
+        cancelBtn.replaceWith(newCancel);
+        newCancel.addEventListener("click", close);
+
+        backdrop.onclick = (e) => {
+          if (e.target === backdrop) close();
+        };
+
+        // Escape closes
+        const escHandler = (e) => {
+          if (e.key === "Escape") {
+            close();
+            document.removeEventListener("keydown", escHandler);
+          }
+        };
+        document.addEventListener("keydown", escHandler);
+      }
+
+      async function tryAutoLoadProjectPdfs(forceReload = false) {
+        if (forceReload) {
+          allTransactions = [];
+          fileSummaries = [];
+          selectedChartCategory = "";
+        }
+
+        if (!PROJECT_PDF_CANDIDATES.length) {
+          showManualUpload(
+            "Nenhum PDF conhecido foi encontrado no projeto. Use o carregamento manual.",
+          );
+          return;
+        }
+
+        setStatusMessage("Tentando carregar PDFs encontrados nesta pasta...");
+        const loaded = [];
+
+        for (const pdfName of PROJECT_PDF_CANDIDATES) {
+          try {
+            const bytes = await fetchPdfBytes(pdfName);
+            if (!bytes) continue;
+            loaded.push({ name: pdfName, bytes });
+          } catch (error) {
+            console.warn("Falha ao carregar PDF do projeto:", pdfName, error);
+          }
+        }
+
+        if (!loaded.length) {
+          showManualUpload(
+            "O navegador não conseguiu acessar automaticamente os PDFs desta pasta. Use o carregamento manual.",
+          );
+          return;
+        }
+
+        await importPdfSources(loaded, true);
+      }
+
+      async function loadManualFiles(files) {
+        const sources = [];
+        for (const file of files) {
+          sources.push({
+            name: file.name,
+            bytes: new Uint8Array(await file.arrayBuffer()),
+          });
+        }
+        await importPdfSources(sources, false);
+      }
+
+      async function importPdfSources(sources, replaceExisting) {
+        // Phase 1: delegate to backend when available
+        if (backendAvailable) {
+          return importPdfSourcesViaBackend(sources, replaceExisting);
+        }
+
+        if (replaceExisting) {
+          allTransactions = [];
+          fileSummaries = [];
+          selectedChartCategory = "";
+        }
+
+        setStatusMessage(`Processando ${sources.length} arquivo(s)...`);
+
+        for (const source of sources) {
+          // Remove any previously loaded transactions from this exact file
+          // before re-adding, so reloading replaces rather than duplicates.
+          // NOTE: we do NOT do a key-based dedup here because two charges with
+          // the same merchant/date/amount in the same bill are legitimate
+          // separate transactions (e.g. two family members, same gym fee).
+          allTransactions = allTransactions.filter(
+            (t) => t.sourceFile !== source.name,
+          );
+          const parsed = await parsePdfSource(source);
+          if (!parsed) continue;
+          allTransactions = allTransactions.concat(parsed.transactions);
+          fileSummaries = upsertFileSummary(fileSummaries, parsed.summary);
+        }
+        hydrateFilters();
+        applyFilters();
+
+        if (!allTransactions.length) {
+          showManualUpload(
+            "Nenhum lançamento foi encontrado nos PDFs carregados.",
+          );
+          return;
+        }
+
+        setStatusMessage(
+          `${fileSummaries.length} fatura(s) carregada(s).`,
+          "ok",
+        );
+        switchTab("dashboard");
+      }
+
+      function upsertFileSummary(list, summary) {
+        const next = list.filter((item) => item.fileName !== summary.fileName);
+        next.push(summary);
+        next.sort((a, b) => a.statementKey.localeCompare(b.statementKey));
+        return next;
+      }
+
+      async function parsePdfSource(source) {
+        try {
+          const pdfData = await extractPdfData(source.bytes);
+          // Prefer the Postagem date embedded in the PDF; fall back to filename.
+          const statementInfo =
+            extractStatementInfoFromRows(pdfData.rows) ||
+            extractStatementInfo(source.name);
+          const officialTotal = extractOfficialTotal(pdfData.rows);
+          const transactionLines = extractTransactionLines(pdfData.rows);
+          const transactions = parseTransactions(
+            transactionLines,
+            statementInfo,
+            source.name,
+          );
+          const taxTransactions = extractTaxTransactions(
+            pdfData.rows,
+            statementInfo,
+            source.name,
+          );
+          transactions.push(...taxTransactions);
+          const parsedTotal = sumValues(transactions);
+          const summary = {
+            fileName: source.name,
+            statementKey: statementInfo.statementKey,
+            label: statementInfo.label,
+            officialTotal,
+            parsedTotal,
+            diff: parsedTotal - officialTotal,
+          };
+
+          console.log(
+            `[${source.name}] Oficial=${officialTotal} | Calculado=${parsedTotal}`,
+          );
+
+          return { transactions, summary };
+        } catch (error) {
+          console.error("Erro ao processar PDF:", source.name, error);
+          setStatusMessage(
+            `Falha ao processar ${source.name}: ${error.message}`,
+            "error",
+          );
+          return null;
+        }
+      }
+
+      async function extractPdfData(pdfBytes) {
+        const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
+        const rows = [];
+
+        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+          const page = await pdf.getPage(pageNumber);
+          const viewport = page.getViewport({ scale: 1 });
+          const content = await page.getTextContent();
+          // Column boundary is at x≈340 (gap between left-col amounts at x≈317–325
+          // and right-col dates at x≈365). viewport.width/2 ≈ 297 incorrectly puts
+          // left-col amount cells into the right bucket, breaking both columns.
+          const midpoint = viewport.width * 0.57;
+          const rawRows = [];
+
+          content.items.forEach((item) => {
+            const text = String(item.str || "").trim();
+            if (!text) return;
+
+            const x = item.transform[4];
+            const y = item.transform[5];
+            let row = rawRows.find((entry) => Math.abs(entry.y - y) < 2);
+
+            if (!row) {
+              row = { y, left: [], right: [] };
+              rawRows.push(row);
+            }
+
+            const bucket = x < midpoint ? row.left : row.right;
+            bucket.push({ x, text });
+          });
+
+          rawRows
+            .sort((a, b) => b.y - a.y)
+            .forEach((row) => {
+              const left = row.left
+                .sort((a, b) => a.x - b.x)
+                .map((item) => item.text)
+                .join(" ")
+                .replace(/\s+/g, " ")
+                .trim();
+              const right = row.right
+                .sort((a, b) => a.x - b.x)
+                .map((item) => item.text)
+                .join(" ")
+                .replace(/\s+/g, " ")
+                .trim();
+
+              rows.push({
+                pageNumber,
+                left,
+                right,
+                combined: `${left} ${right}`.trim(),
+              });
+            });
+        }
+
+        return { rows };
+      }
+
+      // Read the Postagem: DD/MM/YYYY line from the PDF rows to determine
+      // the statement month and year, independent of the file name.
+      function extractStatementInfoFromRows(rows) {
+        for (const row of rows) {
+          const combined = row.combined || "";
+          const m = combined.match(/Postagem[^\d]*(\d{2})\/(\d{2})\/(\d{4})/i);
+          if (!m) continue;
+          const statementMonth = m[2].trim().padStart(2, "0");
+          const statementYear = m[3];
+          return {
+            statementMonth,
+            statementYear,
+            statementKey: `${statementYear}-${statementMonth}`,
+            label: `${MONTH_LABELS[statementMonth] || statementMonth}/${statementYear}`,
+          };
+        }
+        return null;
+      }
+
+      function extractStatementInfo(fileName) {
+        const match = fileName.match(/(\d{2})-(\d{4})/);
+        const statementMonth = match ? match[1] : "00";
+        const statementYear = match ? match[2] : "0000";
+        const label = match
+          ? `${MONTH_LABELS[statementMonth] || statementMonth}/${statementYear}`
+          : fileName;
+        return {
+          statementMonth,
+          statementYear,
+          statementKey: `${statementYear}-${statementMonth}`,
+          label,
+        };
+      }
+
+      function extractOfficialTotal(rows) {
+        // "Valor da fatura atual" = the TRUE total (transactions + charges).
+        // Try it first. "Lançamentos atuais" excludes finance charges so it
+        // is used only as a fallback when no charges exist.
+        for (const row of rows) {
+          const combined = row.combined || "";
+          const normalized = normalizeText(combined);
+          if (!normalized.includes("valor da fatura atual")) continue;
+          const matches = combined.match(/\d{1,3}(?:\.\d{3})*,\d{2}/g) || [];
+          if (!matches.length) continue;
+          const candidate = parseBRL(matches[matches.length - 1]);
+          if (candidate > 100) return candidate;
+        }
+
+        for (const row of rows) {
+          const combined = row.combined || "";
+          const normalized = normalizeText(combined);
+          if (!normalized.includes("lancamentos atuais")) continue;
+          const matches = combined.match(/\d{1,3}(?:\.\d{3})*,\d{2}/g) || [];
+          if (!matches.length) continue;
+          const candidate = parseBRL(matches[matches.length - 1]);
+          if (candidate > 100) return candidate;
+        }
+
+        return 0;
+      }
+
+      // Extracts tax lines (IOF, etc.) that have no DD/MM date and are
+      // therefore invisible to the normal transaction regex.
+      // Reads value from the SAME column as the pattern label to avoid
+      // cross-column contamination (e.g. unrelated penalty in opposite column).
+      function extractTaxTransactions(rows, statementInfo, sourceFile) {
+        const TAX_PATTERNS = [
+          { label: "repasse de iof", merchant: "IOF Internacional" },
+          { label: "total de encargos", merchant: "Encargos (juros/IOF)" },
+        ];
+        const result = [];
+        let lastDate = `01/${statementInfo.statementMonth}`;
+
+        for (const row of rows) {
+          // Track the most recent real date seen in either column
+          const dateMatchLeft = (row.left || "").match(/^(\d{2}\/\d{2})/);
+          const dateMatchRight = (row.right || "").match(/^(\d{2}\/\d{2})/);
+          if (dateMatchLeft) lastDate = dateMatchLeft[1];
+          else if (dateMatchRight) lastDate = dateMatchRight[1];
+
+          for (const colText of [row.left || "", row.right || ""]) {
+            if (!colText) continue;
+            const colNorm = normalizeText(colText);
+            for (const pattern of TAX_PATTERNS) {
+              if (!colNorm.includes(pattern.label)) continue;
+              // Read value ONLY from the same column as the label.
+              // Guard against large figures (interest rates, totals) with < 10000.
+              const nums = colText.match(/\d{1,3}(?:\.\d{3})*,\d{2}/g) || [];
+              const values = nums
+                .map(parseBRL)
+                .filter((v) => !Number.isNaN(v) && v > 0 && v < 10000);
+              for (const value of values) {
+                result.push({
+                  sourceFile,
+                  statementMonth: statementInfo.statementMonth,
+                  statementYear: statementInfo.statementYear,
+                  statementKey: statementInfo.statementKey,
+                  statementLabel: statementInfo.label,
+                  purchaseDate: lastDate,
+                  purchaseDay: lastDate.slice(0, 2),
+                  purchaseMonth: lastDate.slice(3, 5),
+                  merchant: pattern.merchant,
+                  rawMerchant: pattern.merchant,
+                  value,
+                  category: "Impostos",
+                  isInstallment: false,
+                  installmentCurrent: null,
+                  installmentTotal: null,
+                });
+              }
+              break;
+            }
+          }
+        }
+        return result;
+      }
+
+      function extractTransactionLines(rows) {
+        let leftInSection = false;
+        let rightInSection = false;
+        let leftInFutureSection = false;
+        let rightInFutureSection = false;
+        const result = [];
+
+        for (const row of rows) {
+          const sides = [
+            { key: "left", text: row.left || "" },
+            { key: "right", text: row.right || "" },
+          ];
+
+          for (const side of sides) {
+            const text = side.text.trim();
+            if (!text) continue;
+
+            const normalized = normalizeText(text);
+            const startsWithDate = /^\d{2}\/\d{2}/.test(text);
+            const isLeft = side.key === "left";
+
+            if (normalized.includes("compras e saques")) {
+              if (isLeft) {
+                leftInSection = true;
+              } else {
+                rightInSection = true;
+              }
+              continue;
+            }
+
+            if (normalized.includes("compras parceladas")) {
+              if (isLeft) {
+                leftInFutureSection = true;
+              } else {
+                rightInFutureSection = true;
+              }
+              continue;
+            }
+
+            // Only "encargos cobrados nesta fatura" is a real section-end marker.
+            // "lancamentos no cartao" is a domestic subtotal line (not a section end).
+            // "lancamentos internacionais" is a section header we want to pass through
+            // so the Steam/international DD/MM transactions below it are captured.
+            if (normalized.includes("encargos cobrados nesta fatura")) {
+              if (isLeft) {
+                leftInSection = false;
+                leftInFutureSection = false;
+              } else {
+                rightInSection = false;
+                rightInFutureSection = false;
+              }
+              continue;
+            }
+
+            const activeSection = isLeft ? leftInSection : rightInSection;
+            const activeFuture = isLeft
+              ? leftInFutureSection
+              : rightInFutureSection;
+
+            if (!activeSection || activeFuture || !startsWithDate) {
+              continue;
+            }
+
+            result.push(text.replace(/\s+/g, " ").trim());
+          }
+        }
+
+        return result;
+      }
+
+      function parseTransactions(lines, statementInfo, sourceFile) {
+        const parsed = [];
+        const pattern =
+          /^(\d{2}\/\d{2})\s+(.+?)\s+(-?\s?\d{1,3}(?:\.\d{3})*,\d{2})$/;
+
+        lines.forEach((line) => {
+          const cleanLine = line.replace(/\s+/g, " ").trim();
+          const match = cleanLine.match(pattern);
+          if (!match) return;
+
+          const purchaseDate = match[1];
+          const rawMerchant = cleanMerchant(match[2]);
+          const value = parseBRL(match[3]);
+          if (Number.isNaN(value)) return;
+
+          const installmentMatch = rawMerchant.match(/(\d{2})\/(\d{2})/);
+          const installmentCurrent = installmentMatch
+            ? Number(installmentMatch[1])
+            : null;
+          const installmentTotal = installmentMatch
+            ? Number(installmentMatch[2])
+            : null;
+          const merchant = cleanMerchant(
+            rawMerchant.replace(/(\d{2})\/(\d{2})/, " "),
+          );
+
+          parsed.push({
+            sourceFile,
+            statementMonth: statementInfo.statementMonth,
+            statementYear: statementInfo.statementYear,
+            statementKey: statementInfo.statementKey,
+            statementLabel: statementInfo.label,
+            purchaseDate,
+            purchaseDay: purchaseDate.slice(0, 2),
+            purchaseMonth: purchaseDate.slice(3, 5),
+            merchant,
+            rawMerchant,
+            value,
+            category: categorizeMerchant(merchant),
+            isInstallment: Boolean(installmentMatch),
+            installmentCurrent,
+            installmentTotal,
+          });
+        });
+
+        return parsed;
+      }
+
+      function categorizeMerchant(merchant) {
+        const rules = getActiveRules();
+        const normalized = normalizeText(merchant);
+        for (const rule of rules) {
+          if (normalized.includes(normalizeText(rule.keyword))) {
+            return rule.category;
+          }
+        }
+        return "Outros";
+      }
+
+      // In-memory store for backend-loaded rules (populated on boot / after save)
+      let _loadedRulesText = "";
+
+      function getActiveRules() {
+        const custom = parseRulesText(_loadedRulesText);
+        return [...custom, ...DEFAULT_CATEGORY_RULES];
+      }
+
+      function parseRulesText(text) {
+        return text
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const [keyword, category] = line
+              .split("=")
+              .map((item) => item && item.trim());
+            return keyword && category ? { keyword, category } : null;
+          })
+          .filter(Boolean);
+      }
+
+      function deduplicateTransactions(transactions) {
+        const seen = new Set();
+        return transactions.filter((transaction) => {
+          const installmentKey = transaction.isInstallment
+            ? `${transaction.installmentCurrent}/${transaction.installmentTotal}`
+            : "avista";
+          const key = [
+            transaction.statementKey,
+            transaction.purchaseDate,
+            normalizeText(transaction.merchant),
+            transaction.value.toFixed(2),
+            installmentKey,
+          ].join("|");
+
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      }
+
+      function hydrateFilters() {
+        hydrateSelect(
+          elements.monthFilter,
+          uniqueSorted(allTransactions.map((item) => item.statementMonth)),
+          (value) => ({ value, label: MONTH_LABELS[value] || value }),
+          "Todos",
+        );
+        // Auto-select the highest available year so the most recent data shows first.
+        const years = uniqueSorted(
+          allTransactions.map((item) => item.statementYear),
+        );
+        hydrateSelect(
+          elements.yearFilter,
+          years,
+          (value) => ({ value, label: value }),
+          "Todos",
+        );
+        if (years.length && !elements.yearFilter.value) {
+          elements.yearFilter.value = years[years.length - 1];
+        }
+        hydrateSelect(
+          elements.categoryFilter,
+          uniqueSorted(allTransactions.map((item) => item.category)),
+          (value) => ({ value, label: value }),
+          "Todas",
+        );
+      }
+
+      function hydrateSelect(element, values, formatter, defaultLabel) {
+        const currentValue = element.value;
+        element.innerHTML = `<option value="">${defaultLabel}</option>`;
+        values.forEach((value) => {
+          const option = document.createElement("option");
+          const item = formatter(value);
+          option.value = item.value;
+          option.textContent = item.label;
+          if (currentValue && currentValue === item.value)
+            option.selected = true;
+          element.appendChild(option);
+        });
+      }
+
+      function applyFilters() {
+        const search = normalizeText(elements.searchFilter.value);
+        const month = elements.monthFilter.value;
+        const year = elements.yearFilter.value;
+        const selectCategory = elements.categoryFilter.value;
+        const category = selectCategory || selectedChartCategory;
+        const onlyInstallments = elements.installmentOnlyFilter.checked;
+
+        // Base filter: includes credits; used for net total and credits tab.
+        const baseFiltered = allTransactions
+          .filter((item) => !month || item.statementMonth === month)
+          .filter((item) => !year || item.statementYear === year)
+          .filter((item) => !category || item.category === category)
+          .filter(
+            (item) => !search || normalizeText(item.merchant).includes(search),
+          )
+          .filter((item) => !onlyInstallments || item.isInstallment);
+
+        // netFilteredTransactions: all (debits + credits), drives period summary and total.
+        netFilteredTransactions = baseFiltered.slice();
+
+        // filteredTransactions: only debits (positive), drives chart and main table.
+        filteredTransactions = baseFiltered
+          .filter((item) => item.value >= 0)
+          .sort(compareTransactions);
+
+        const creditTransactions = baseFiltered
+          .filter((item) => item.value < 0)
+          .sort(compareTransactions);
+
+        renderSummary(baseFiltered);
+        renderChart();
+        renderReconciliation();
+        renderPeriodSummary();
+        tablePage = 1;
+        installmentPage = 1;
+        renderTable();
+        renderCreditsTable(creditTransactions);
+        renderInstallments();
+        renderActiveFilterSummary();
+      }
+
+      function compareTransactions(a, b) {
+        if (a.statementKey !== b.statementKey) {
+          return b.statementKey.localeCompare(a.statementKey);
+        }
+        return b.purchaseDate.localeCompare(a.purchaseDate);
+      }
+
+      function renderSummary(netTransactions) {
+        // netTransactions = baseFiltered (includes credits) → matches official total.
+        // filteredTransactions = what's visible in the table (may hide credits).
+        const netSource = netTransactions || filteredTransactions;
+        const total = sumValues(netSource);
+        elements.filteredTotal.textContent = formatCurrency(total);
+        elements.filteredCount.textContent = `${filteredTransactions.length} lançamento(s) visíveis`;
+        const credits = netSource.filter((item) => item.value < 0);
+        const creditsEl = document.getElementById("creditsTotal");
+        if (credits.length) {
+          creditsEl.textContent = `Estornos: ${formatCurrency(sumValues(credits))}`;
+          creditsEl.classList.remove("hidden");
+        } else {
+          creditsEl.classList.add("hidden");
+        }
+        elements.loadedFilesCount.textContent = String(fileSummaries.length);
+        elements.loadedPeriods.textContent =
+          fileSummaries.length > 0
+            ? (() => {
+                const first = fileSummaries[0].label;
+                const last = fileSummaries[fileSummaries.length - 1].label;
+                return first === last
+                  ? `${fileSummaries.length} fatura(s) • ${first}`
+                  : `${fileSummaries.length} fatura(s) • ${first} – ${last}`;
+              })()
+            : "Nenhuma fatura processada";
+
+        renderAverages();
+      }
+
+      function renderAverages() {
+        const fixedCostsMonthly = getFixedCostsTotal();
+        const fixedIncomeMonthly = getFixedIncomeTotal();
+        const netFixedMonthly = fixedCostsMonthly - fixedIncomeMonthly;
+
+        // Use the exact same source as Resumo por período (net: debits + credits)
+        // so that: Média = média das linhas do Resumo + despesas fixas - receitas fixas,
+        // and: Total filtrado ÷ nº de períodos + despesas fixas - receitas fixas = Média.
+        const source = netFilteredTransactions;
+
+        if (!source.length) {
+          const netFixedDisplay =
+            selectedAverageMode === "mes"
+              ? netFixedMonthly
+              : netFixedMonthly * 12;
+          const netFixedAbs =
+            netFixedDisplay < 0 ? Math.abs(netFixedDisplay) : netFixedDisplay;
+          elements.averageValue.textContent = formatCurrency(netFixedAbs);
+          elements.averageValue.style.color =
+            netFixedDisplay < 0
+              ? "var(--ok)"
+              : netFixedDisplay > 0
+                ? "var(--danger)"
+                : "";
+          elements.averageDetail.textContent =
+            fixedCostsMonthly > 0 || fixedIncomeMonthly > 0
+              ? "Baseado apenas em valores fixos."
+              : "Sem dados carregados";
+          return;
+        }
+
+        const selectedYear = elements.yearFilter.value;
+        const periodTotals =
+          selectedAverageMode === "mes"
+            ? aggregateByMonth(source)
+            : aggregateByYear(source);
+        const cardValues = Object.values(periodTotals);
+        const cardAvg = cardValues.length
+          ? cardValues.reduce((sum, value) => sum + value, 0) /
+            cardValues.length
+          : 0;
+
+        const fixedCostsPerPeriod =
+          selectedAverageMode === "mes"
+            ? fixedCostsMonthly
+            : fixedCostsMonthly * 12;
+        const fixedIncomePerPeriod =
+          selectedAverageMode === "mes"
+            ? fixedIncomeMonthly
+            : fixedIncomeMonthly * 12;
+        const average = cardAvg + fixedCostsPerPeriod - fixedIncomePerPeriod;
+
+        const averageAbs = average < 0 ? Math.abs(average) : average;
+        elements.averageValue.textContent = formatCurrency(averageAbs);
+        elements.averageValue.style.color =
+          average < 0 ? "var(--ok)" : average > 0 ? "var(--danger)" : "";
+        const parts = ["cartão de crédito"];
+        if (fixedCostsMonthly > 0) parts.push("despesas fixas");
+        if (fixedIncomeMonthly > 0) parts.push("receitas fixas");
+        elements.averageDetail.textContent = `Inclui ${parts.join(", ")}.`;
+      }
+
+      function renderChart() {
+        const grouped = filteredTransactions.reduce((acc, item) => {
+          acc[item.category] = (acc[item.category] || 0) + item.value;
+          return acc;
+        }, {});
+
+        const labels = Object.keys(grouped);
+        const values = Object.values(grouped);
+        const colors = [
+          "#0f766e",
+          "#c87f35",
+          "#6b4e3d",
+          "#3178c6",
+          "#228b22",
+          "#b54708",
+          "#8e4ec6",
+          "#b42318",
+          "#0a9396",
+          "#a16207",
+        ];
+
+        if (categoryChart) categoryChart.destroy();
+
+        categoryChart = new Chart(document.getElementById("categoryChart"), {
+          type: "doughnut",
+          data: {
+            labels,
+            datasets: [
+              {
+                data: values,
+                backgroundColor: labels.map(
+                  (_, index) => colors[index % colors.length],
+                ),
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+              tooltip: {
+                callbacks: {
+                  label(context) {
+                    const total =
+                      values.reduce((sum, value) => sum + value, 0) || 1;
+                    const percentage = ((context.raw / total) * 100).toFixed(1);
+                    return `${context.label}: ${formatCurrency(context.raw)} (${percentage}%)`;
+                  },
+                },
+              },
+            },
+            onClick(_, activeElements) {
+              if (!activeElements.length) return;
+              const index = activeElements[0].index;
+              const clickedCategory = labels[index];
+              selectedChartCategory =
+                selectedChartCategory === clickedCategory
+                  ? ""
+                  : clickedCategory;
+              elements.categoryFilter.value = selectedChartCategory;
+              applyFilters();
+            },
+          },
+        });
+      }
+
+      function renderReconciliation() {
+        if (!fileSummaries.length) {
+          elements.reconciliationList.innerHTML = `<div class="empty">Nenhum arquivo processado.</div>`;
+          return;
+        }
+
+        // Group by year
+        const byYear = {};
+        for (const s of fileSummaries) {
+          const year = s.statementKey.slice(0, 4);
+          if (!byYear[year]) byYear[year] = [];
+          byYear[year].push(s);
+        }
+
+        let bodyHtml = "";
+        for (const year of Object.keys(byYear).sort()) {
+          bodyHtml += `<tr class="recon-year-row"><td colspan="6">${escapeHtml(year)}</td></tr>`;
+          for (const summary of byYear[year]) {
+            const diff = Math.abs(summary.diff);
+            const statusClass =
+              diff <= 0.01
+                ? "status-ok"
+                : diff <= 1
+                  ? "status-warn"
+                  : "status-error";
+            const statusIcon = diff <= 0.01 ? "✓" : diff <= 1 ? "!" : "✗";
+            const statusText =
+              diff <= 0.01 ? "OK" : diff <= 1 ? "Atenção" : "Divergência";
+            const diffClass =
+              diff <= 0.01 ? "" : diff <= 1 ? "amount-warn" : "amount-negative";
+            bodyHtml += `
+              <tr>
+                <td><strong>${escapeHtml(summary.label)}</strong></td>
+                <td class="recon-filename" title="${escapeHtml(summary.fileName)}">${escapeHtml(summary.fileName)}</td>
+                <td class="recon-num">${formatCurrency(summary.officialTotal)}</td>
+                <td class="recon-num">${formatCurrency(summary.parsedTotal)}</td>
+                <td class="recon-num ${diffClass}">${formatCurrency(summary.diff)}</td>
+                <td><span class="pill ${statusClass}">${statusIcon} ${statusText}</span></td>
+              </tr>`;
+          }
+        }
+
+        elements.reconciliationList.innerHTML = `
+          <div class="recon-table-wrap">
+          <table class="recon-table">
+            <thead>
+              <tr>
+                <th>Período</th>
+                <th>Arquivo</th>
+                <th class="recon-num">Oficial</th>
+                <th class="recon-num">Calculado</th>
+                <th class="recon-num">Diferença</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>${bodyHtml}</tbody>
+          </table>
+          </div>`;
+      }
+
+      function renderPeriodSummary() {
+        const data =
+          selectedAverageMode === "mes"
+            ? aggregateByMonth(netFilteredTransactions)
+            : aggregateByYear(netFilteredTransactions);
+        const entries = Object.entries(data).sort((a, b) =>
+          b[0].localeCompare(a[0]),
+        );
+
+        if (!entries.length) {
+          elements.periodSummary.innerHTML = `<div class="empty">Sem dados para o modo selecionado.</div>`;
+          return;
+        }
+
+        const rows = entries
+          .map(([period, total]) => {
+            const label =
+              selectedAverageMode === "mes"
+                ? formatStatementKey(period)
+                : period;
+            return `
+              <tr>
+                <td>${escapeHtml(label)}</td>
+                <td>${formatCurrency(total)}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        elements.periodSummary.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>${selectedAverageMode === "mes" ? "Mês/Ano" : "Ano"}</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+
+      function renderTable() {
+        if (!filteredTransactions.length) {
+          elements.tableContainer.innerHTML = `
+            <div class="empty">
+              Nenhum lançamento encontrado para os filtros atuais.
+            </div>
+          `;
+          return;
+        }
+
+        const sorted = [...filteredTransactions].sort((a, b) => {
+          let cmp = 0;
+          switch (tableSort.col) {
+            case "date":
+              cmp = (a.purchaseDate || "").localeCompare(b.purchaseDate || "");
+              break;
+            case "merchant":
+              cmp = (a.merchant || "").localeCompare(b.merchant || "");
+              break;
+            case "category":
+              cmp = (a.category || "").localeCompare(b.category || "");
+              break;
+            case "installment": {
+              const ai = a.isInstallment ? a.installmentCurrent : 0;
+              const bi = b.isInstallment ? b.installmentCurrent : 0;
+              cmp = ai - bi;
+              break;
+            }
+            case "value":
+              cmp = a.value - b.value;
+              break;
+          }
+          return tableSort.dir === "asc" ? cmp : -cmp;
+        });
+
+        const totalPages = Math.ceil(sorted.length / tablePageSize);
+        tablePage = Math.min(tablePage, totalPages);
+        const start = (tablePage - 1) * tablePageSize;
+        const pageItems = sorted.slice(start, start + tablePageSize);
+
+        const cols = [
+          { key: "date", label: "Data" },
+          { key: "merchant", label: "Estabelecimento" },
+          { key: "category", label: "Categoria" },
+          { key: "installment", label: "Parcela" },
+          { key: "value", label: "Valor" },
+        ];
+
+        const headers = cols
+          .map(({ key, label }) => {
+            const isActive = tableSort.col === key;
+            const dirClass = isActive
+              ? tableSort.dir === "asc"
+                ? "sort-asc"
+                : "sort-desc"
+              : "";
+            return `<th class="sortable ${dirClass}" data-sort="${key}">${label}</th>`;
+          })
+          .join("");
+
+        const rows = pageItems
+          .map((item, i) => {
+            const globalIdx = start + i;
+            const installment = item.isInstallment
+              ? `${item.installmentCurrent}/${item.installmentTotal}`
+              : "-";
+            return `
+              <tr data-idx="${globalIdx}">
+                <td>
+                  ${escapeHtml(item.purchaseDate)}
+                  <div class="statement-note">Fatura ${escapeHtml(item.statementLabel)}</div>
+                </td>
+                <td>
+                  ${escapeHtml(item.merchant)}
+                  <div class="statement-note">${escapeHtml(item.sourceFile)}</div>
+                </td>
+                <td><span class="category-tag">${escapeHtml(item.category)}</span></td>
+                <td>${installment}</td>
+                <td class="${item.value < 0 ? "amount-negative" : "amount-positive"}">${formatCurrency(item.value)}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        elements.tableContainer.innerHTML = `
+          <table>
+            <thead><tr>${headers}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+          ${buildPagination(tablePage, totalPages, sorted.length, tablePageSize, "table")}
+        `;
+
+        elements.tableContainer
+          .querySelectorAll("th.sortable")
+          .forEach((th) => {
+            th.addEventListener("click", () => {
+              const col = th.dataset.sort;
+              if (tableSort.col === col) {
+                tableSort.dir = tableSort.dir === "asc" ? "desc" : "asc";
+              } else {
+                tableSort.col = col;
+                tableSort.dir = col === "value" ? "desc" : "asc";
+              }
+              tablePage = 1;
+              renderTable();
+            });
+          });
+
+        elements.tableContainer.querySelectorAll("tbody tr").forEach((tr) => {
+          tr.style.cursor = "pointer";
+          tr.addEventListener("click", () => {
+            const idx = Number(tr.dataset.idx);
+            openCategoryModal(sorted[idx]);
+          });
+        });
+
+        bindPaginationEvents(elements.tableContainer, totalPages, "table", () =>
+          renderTable(),
+        );
+      }
+
+      function renderCreditsTable(credits) {
+        const countBadge = credits.length
+          ? ` <span style="font-size:0.82rem;background:var(--brand-soft);color:#0b584d;border-radius:999px;padding:3px 10px;margin-left:8px">${credits.length}</span>`
+          : "";
+        elements.tabCreditos.innerHTML = `Créditos e Estornos${countBadge}`;
+
+        if (!credits.length) {
+          elements.creditsContainer.innerHTML = `<div class="empty">Nenhum estorno ou crédito para os filtros atuais.</div>`;
+          return;
+        }
+
+        const total = sumValues(credits);
+        const rows = credits
+          .map((item) => {
+            return `
+              <tr>
+                <td>
+                  ${escapeHtml(item.purchaseDate)}
+                  <div class="statement-note">Fatura ${escapeHtml(item.statementLabel)}</div>
+                </td>
+                <td>
+                  ${escapeHtml(item.merchant)}
+                  <div class="statement-note">${escapeHtml(item.sourceFile)}</div>
+                </td>
+                <td><span class="category-tag">${escapeHtml(item.category)}</span></td>
+                <td class="amount-negative">${formatCurrency(item.value)}</td>
+              </tr>`;
+          })
+          .join("");
+
+        elements.creditsContainer.innerHTML = `
+          <div style="margin-bottom:12px;font-size:0.92rem;color:var(--ok)">
+            Total de estornos: <strong>${formatCurrency(total)}</strong>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Data</th>
+              <th>Estabelecimento</th>
+              <th>Categoria</th>
+              <th>Valor</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      }
+
+      function renderInstallments() {
+        const groups = groupInstallments(
+          filteredTransactions.filter((item) => item.isInstallment),
+        );
+        if (!groups.length) {
+          elements.installmentGroups.innerHTML = `<div class="empty">Nenhum parcelamento encontrado para os filtros atuais.</div>`;
+          return;
+        }
+
+        const totalPages = Math.ceil(groups.length / installmentPageSize);
+        installmentPage = Math.min(installmentPage, totalPages);
+        const start = (installmentPage - 1) * installmentPageSize;
+        const pageGroups = groups.slice(start, start + installmentPageSize);
+
+        elements.installmentGroups.innerHTML =
+          pageGroups
+            .map((group) => {
+              return `
+                <div class="panel" style="margin-bottom: 12px; padding: 16px">
+                  <div class="section-head" style="margin-bottom: 8px">
+                    <strong>${escapeHtml(group.merchant)}</strong>
+                    <span class="pill">${group.currentRange}</span>
+                  </div>
+                  <div class="muted">Faturas vistas: ${escapeHtml(group.statementLabels.join(", "))}</div>
+                  <div class="installment-note">Valor por parcela: ${formatCurrency(group.value)}</div>
+                  <div class="installment-note">Total da compra: ${formatCurrency(group.totalCost)}</div>
+                  <div class="installment-note">Parcelas restantes: ${group.remaining} &times; ${formatCurrency(group.value)} = <strong>${formatCurrency(group.remainingCost)}</strong></div>
+                  <div class="installment-note">Previs\u00e3o de t\u00e9rmino: <strong>${escapeHtml(group.remaining === 0 ? "Quitado" : group.endLabel)}</strong></div>
+                </div>
+              `;
+            })
+            .join("") +
+          buildPagination(
+            installmentPage,
+            totalPages,
+            groups.length,
+            installmentPageSize,
+            "installment",
+          );
+
+        bindPaginationEvents(
+          elements.installmentGroups,
+          totalPages,
+          "installment",
+          () => renderInstallments(),
+        );
+      }
+
+      function buildPagination(
+        currentPage,
+        totalPages,
+        totalItems,
+        pageSize,
+        ns,
+      ) {
+        if (totalPages <= 1 && totalItems <= 20) return "";
+        const start = (currentPage - 1) * pageSize + 1;
+        const end = Math.min(currentPage * pageSize, totalItems);
+
+        const maxBtns = 5;
+        const half = Math.floor(maxBtns / 2);
+        let pageFrom = Math.max(1, currentPage - half);
+        let pageTo = Math.min(totalPages, pageFrom + maxBtns - 1);
+        if (pageTo - pageFrom < maxBtns - 1)
+          pageFrom = Math.max(1, pageTo - maxBtns + 1);
+
+        let pageBtns = "";
+        if (pageFrom > 1)
+          pageBtns += `<button class="pag-btn" data-pag-ns="${ns}" data-pag="1">1</button><span style="padding:0 4px">…</span>`;
+        for (let p = pageFrom; p <= pageTo; p++) {
+          pageBtns += `<button class="pag-btn${p === currentPage ? " active" : ""}" data-pag-ns="${ns}" data-pag="${p}">${p}</button>`;
+        }
+        if (pageTo < totalPages)
+          pageBtns += `<span style="padding:0 4px">…</span><button class="pag-btn" data-pag-ns="${ns}" data-pag="${totalPages}">${totalPages}</button>`;
+
+        return `
+          <div class="pagination">
+            <span>${start}–${end} de ${totalItems}</span>
+            <div class="pagination-btns">
+              <button class="pag-btn" data-pag-ns="${ns}" data-pag="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>‹</button>
+              ${pageBtns}
+              <button class="pag-btn" data-pag-ns="${ns}" data-pag="${currentPage + 1}" ${currentPage === totalPages ? "disabled" : ""}>›</button>
+            </div>
+            <div class="pag-size">
+              Por página:
+              <select data-pag-size-ns="${ns}">
+                ${[20, 50, 100].map((n) => `<option value="${n}" ${n === pageSize ? "selected" : ""}>${n}</option>`).join("")}
+              </select>
+            </div>
+          </div>`;
+      }
+
+      function bindPaginationEvents(container, totalPages, ns, rerender) {
+        container.querySelectorAll(`[data-pag-ns="${ns}"]`).forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const p = Number(btn.dataset.pag);
+            if (p < 1 || p > totalPages || btn.disabled) return;
+            if (ns === "table") tablePage = p;
+            else installmentPage = p;
+            rerender();
+          });
+        });
+        const sizeSelect = container.querySelector(
+          `[data-pag-size-ns="${ns}"]`,
+        );
+        if (sizeSelect) {
+          sizeSelect.addEventListener("change", () => {
+            if (ns === "table") {
+              tablePageSize = Number(sizeSelect.value);
+              tablePage = 1;
+            } else {
+              installmentPageSize = Number(sizeSelect.value);
+              installmentPage = 1;
+            }
+            rerender();
+          });
+        }
+      }
+
+      function groupInstallments(entries) {
+        const map = new Map();
+        entries.forEach((item) => {
+          const key = `${normalizeText(item.merchant)}|${item.installmentTotal}|${item.value.toFixed(2)}`;
+          if (!map.has(key)) {
+            map.set(key, {
+              merchant: item.merchant,
+              value: item.value,
+              entries: [],
+              statementLabels: [],
+            });
+          }
+          const group = map.get(key);
+          group.entries.push(item);
+          if (!group.statementLabels.includes(item.statementLabel)) {
+            group.statementLabels.push(item.statementLabel);
+          }
+        });
+
+        return Array.from(map.values())
+          .map((group) => {
+            const sorted = group.entries
+              .slice()
+              .sort((a, b) => a.installmentCurrent - b.installmentCurrent);
+            const first = sorted[0];
+            const last = sorted[sorted.length - 1];
+            const installmentTotal = first.installmentTotal;
+            const lastSeen = last.installmentCurrent;
+            const remaining = installmentTotal - lastSeen;
+            // Estimate end month: advance last-seen statementKey by remaining months
+            const [lastYear, lastMonth] = last.statementKey
+              .split("-")
+              .map(Number);
+            const endDate = new Date(lastYear, lastMonth - 1 + remaining);
+            const endKey = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, "0")}`;
+            return {
+              ...group,
+              installmentTotal,
+              lastSeen,
+              remaining,
+              totalCost: group.value * installmentTotal,
+              remainingCost: group.value * remaining,
+              endLabel: formatStatementKey(endKey),
+              currentRange: `${first.installmentCurrent}/${installmentTotal} até ${last.installmentCurrent}/${installmentTotal}`,
+            };
+          })
+          .sort((a, b) => b.value - a.value);
+      }
+
+      function renderActiveFilterSummary() {
+        const parts = [];
+        if (elements.monthFilter.value)
+          parts.push(`mês: ${MONTH_LABELS[elements.monthFilter.value]}`);
+        if (elements.yearFilter.value)
+          parts.push(`ano: ${elements.yearFilter.value}`);
+        if (elements.categoryFilter.value)
+          parts.push(`categoria: ${elements.categoryFilter.value}`);
+        if (elements.searchFilter.value.trim())
+          parts.push(`busca: ${elements.searchFilter.value.trim()}`);
+        if (elements.installmentOnlyFilter.checked)
+          parts.push("apenas parcelados");
+
+        elements.activeFilterSummary.textContent = parts.length
+          ? parts.join(" • ")
+          : "Sem filtros aplicados";
+      }
+
+      async function loadRulesEditor() {
+        if (!backendAvailable) {
+          // Offline fallback: use in-memory or localStorage migration data
+          const stored = localStorage.getItem("expense-category-rules") || "";
+          _loadedRulesText = stored;
+          elements.rulesEditor.value =
+            stored ||
+            DEFAULT_CATEGORY_RULES.map(
+              (r) => `${r.keyword}=${r.category}`,
+            ).join("\n");
+          return;
+        }
+        try {
+          const resp = await fetch(
+            `${BACKEND_URL}/api/settings/category-rules`,
+          );
+          if (!resp.ok) throw new Error("category-rules fetch failed");
+          const rules = await resp.json();
+          // Rules arrive sorted by priority from backend.
+          // Separate user rules (isDefault=false) from defaults; only show user rules in editor.
+          const userRules = rules.filter((r) => !r.isDefault);
+          const text = userRules
+            .map((r) => `${r.keyword}=${r.category}`)
+            .join("\n");
+          _loadedRulesText = text;
+          elements.rulesEditor.value =
+            text ||
+            DEFAULT_CATEGORY_RULES.map(
+              (r) => `${r.keyword}=${r.category}`,
+            ).join("\n");
+        } catch (err) {
+          console.warn("Could not load category rules from backend:", err);
+        }
+      }
+
+      async function saveRulesToBackend(rulesText) {
+        if (!backendAvailable) {
+          localStorage.setItem("expense-category-rules", rulesText);
+          _loadedRulesText = rulesText;
+          return;
+        }
+        const parsed = parseRulesText(rulesText);
+        const payload = parsed.map((r, idx) => ({
+          keyword: r.keyword,
+          category: r.category,
+          priority: idx,
+          isDefault: false,
+        }));
+        try {
+          await fetch(`${BACKEND_URL}/api/settings/category-rules`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          _loadedRulesText = rulesText;
+        } catch (err) {
+          console.error("Failed to save category rules to backend:", err);
+        }
+      }
+
+      async function migrateLocalStorageRulesToBackend() {
+        const migrated = localStorage.getItem(
+          "expense-category-rules-migrated",
+        );
+        if (migrated) return; // already done
+        const stored = localStorage.getItem("expense-category-rules");
+        if (!stored || !stored.trim()) return; // nothing to migrate
+        // Only migrate if DB is currently empty (no user rules yet)
+        try {
+          const resp = await fetch(
+            `${BACKEND_URL}/api/settings/category-rules`,
+          );
+          if (!resp.ok) return;
+          const existing = await resp.json();
+          const hasUserRules = existing.some((r) => !r.isDefault);
+          if (hasUserRules) {
+            localStorage.setItem("expense-category-rules-migrated", "1");
+            return;
+          }
+          await saveRulesToBackend(stored);
+          localStorage.setItem("expense-category-rules-migrated", "1");
+          console.log(
+            "[migration] category rules migrated from localStorage to DB",
+          );
+        } catch (err) {
+          console.warn("[migration] Could not migrate category rules:", err);
+        }
+      }
+
+      function reapplyCategories() {
+        allTransactions = allTransactions.map((item) => ({
+          ...item,
+          category: categorizeMerchant(item.merchant),
+        }));
+        hydrateFilters();
+        applyFilters();
+      }
+
+      function showManualUpload(message) {
+        setStatusMessage(message, "warn");
+        elements.openUploadBtn.classList.remove("hidden");
+        switchTab("arquivos");
+      }
+
+      function switchTab(name) {
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.add("hidden"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+        document
+          .querySelectorAll("[data-tab-nav]")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.tabNav === name),
+          );
+        document.getElementById("tab-" + name).classList.remove("hidden");
+      }
+
+      function renderEmptyState() {
+        elements.reconciliationList.innerHTML = `<div class="empty">Aguardando PDFs.</div>`;
+        elements.periodSummary.innerHTML = `<div class="empty">Aguardando PDFs.</div>`;
+        elements.tableContainer.innerHTML = `<div class="empty">Carregue uma ou mais faturas para começar.</div>`;
+        elements.creditsContainer.innerHTML = ``;
+        elements.installmentGroups.innerHTML = `<div class="empty">Parcelamentos aparecerão aqui.</div>`;
+      }
+
+      function setStatusMessage(message, mode = "default") {
+        const className =
+          mode === "error"
+            ? "status-error"
+            : mode === "warn"
+              ? "status-warn"
+              : mode === "ok"
+                ? "status-ok"
+                : "";
+
+        elements.statusBadges.innerHTML = `
+          <span class="badge ${className}">${escapeHtml(message)}</span>
+        `;
+      }
+
+      async function fetchPdfBytes(url) {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        return new Uint8Array(await response.arrayBuffer());
+      }
+
+      function aggregateByMonth(entries) {
+        return entries.reduce((acc, item) => {
+          acc[item.statementKey] = (acc[item.statementKey] || 0) + item.value;
+          return acc;
+        }, {});
+      }
+
+      function aggregateByYear(entries) {
+        return entries.reduce((acc, item) => {
+          acc[item.statementYear] = (acc[item.statementYear] || 0) + item.value;
+          return acc;
+        }, {});
+      }
+
+      function uniqueSorted(values) {
+        return [...new Set(values)].sort();
+      }
+
+      function formatStatementKey(key) {
+        const [year, month] = key.split("-");
+        return `${MONTH_LABELS[month] || month}/${year}`;
+      }
+
+      function parseBRL(value) {
+        return Number(
+          value.replace(/\s+/g, "").replace(/\./g, "").replace(",", "."),
+        );
+      }
+
+      function cleanMerchant(value) {
+        return value
+          .replace(/\*/g, " ")
+          .replace(/-CT/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function normalizeText(value) {
+        return String(value || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9\s:/-]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function sumValues(entries) {
+        return entries.reduce((sum, item) => sum + (item.value || 0), 0);
+      }
+
+      function formatCurrency(value) {
+        return CURRENCY_FORMATTER.format(value || 0);
+      }
+
+      function applyBrlMask(e) {
+        const input = e.target;
+        let raw = input.value.replace(/[^\d,]/g, "");
+        // Allow only first comma
+        const commaIdx = raw.indexOf(",");
+        let intStr, decStr;
+        if (commaIdx >= 0) {
+          intStr = raw.slice(0, commaIdx);
+          decStr = raw.slice(commaIdx + 1, commaIdx + 3);
+        } else {
+          intStr = raw;
+          decStr = null;
+        }
+        // Strip leading zeros
+        intStr = intStr.replace(/^0+(\d)/, "$1");
+        // Thousands separators
+        intStr = intStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        input.value = decStr !== null ? intStr + "," + decStr : intStr;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // ── Fixed (recurring) costs ──────────────────────────────────────────
+
+      async function loadFixedCosts() {
+        if (backendAvailable) {
+          try {
+            const resp = await fetch(`${BACKEND_URL}/api/settings/fixed-costs`);
+            if (!resp.ok) throw new Error("fixed-costs fetch failed");
+            const data = await resp.json();
+            // Backend stores {id, label, amount}; map to the shape the UI expects.
+            fixedCosts = data.map((c) => ({ name: c.label, amount: c.amount }));
+            return;
+          } catch (err) {
+            console.warn("Could not load fixed costs from backend:", err);
+          }
+        }
+        // Offline fallback
+        try {
+          fixedCosts = JSON.parse(
+            localStorage.getItem("expense-fixed-costs") || "[]",
+          );
+        } catch {
+          fixedCosts = [];
+        }
+      }
+
+      async function saveFixedCosts() {
+        if (backendAvailable) {
+          try {
+            await fetch(`${BACKEND_URL}/api/settings/fixed-costs`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(
+                fixedCosts.map((c) => ({ label: c.name, amount: c.amount })),
+              ),
+            });
+            return;
+          } catch (err) {
+            console.error("Failed to save fixed costs to backend:", err);
+          }
+        }
+        localStorage.setItem("expense-fixed-costs", JSON.stringify(fixedCosts));
+      }
+
+      async function migrateLocalStorageFixedCostsToBackend() {
+        const migrated = localStorage.getItem("expense-fixed-costs-migrated");
+        if (migrated) return;
+        const stored = localStorage.getItem("expense-fixed-costs");
+        if (!stored || !stored.trim() || stored === "[]") return;
+        try {
+          const resp = await fetch(`${BACKEND_URL}/api/settings/fixed-costs`);
+          if (!resp.ok) return;
+          const existing = await resp.json();
+          if (existing.length) {
+            localStorage.setItem("expense-fixed-costs-migrated", "1");
+            return;
+          }
+          const parsed = JSON.parse(stored);
+          await fetch(`${BACKEND_URL}/api/settings/fixed-costs`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(
+              parsed.map((c) => ({ label: c.name, amount: c.amount })),
+            ),
+          });
+          localStorage.setItem("expense-fixed-costs-migrated", "1");
+          console.log(
+            "[migration] fixed costs migrated from localStorage to DB",
+          );
+        } catch (err) {
+          console.warn("[migration] Could not migrate fixed costs:", err);
+        }
+      }
+
+      function getFixedCostsTotal() {
+        return fixedCosts.reduce((sum, item) => sum + (item.amount || 0), 0);
+      }
+
+      async function addFixedCost() {
+        const nameInput = document.getElementById("fixedNameInput");
+        const amountInput = document.getElementById("fixedAmountInput");
+        const nameError = document.getElementById("fixedNameError");
+        const amountError = document.getElementById("fixedAmountError");
+        const name = nameInput.value.trim();
+        const rawAmount = amountInput.value.trim();
+
+        let valid = true;
+
+        if (!name) {
+          nameInput.classList.add("fixed-input-invalid");
+          nameError.textContent = "Informe o nome da despesa.";
+          valid = false;
+        } else {
+          nameInput.classList.remove("fixed-input-invalid");
+          nameError.textContent = "";
+        }
+
+        const normalized = rawAmount.replace(/\./g, "").replace(",", ".");
+        const amount = parseFloat(normalized);
+        if (!rawAmount || isNaN(amount) || amount <= 0) {
+          amountInput.classList.add("fixed-input-invalid");
+          amountError.textContent = "Informe um valor válido maior que zero.";
+          valid = false;
+        } else {
+          amountInput.classList.remove("fixed-input-invalid");
+          amountError.textContent = "";
+        }
+
+        if (!valid) {
+          if (!name) nameInput.focus();
+          else amountInput.focus();
+          return;
+        }
+
+        fixedCosts.push({ name, amount });
+        await saveFixedCosts();
+        nameInput.value = "";
+        amountInput.value = "";
+        nameInput.focus();
+        renderFixedCostsList();
+        renderFixedCostsCard();
+        renderAverages();
+      }
+
+      function attachDragDrop(list, arr, saveFunc, renderFunc) {
+        const container = list.querySelector(".fixed-items-container");
+        if (!container || typeof Sortable === "undefined") return;
+        // Skip init while a row is open for editing
+        if (container.querySelector(".fixed-item-edit-row")) return;
+        Sortable.create(container, {
+          handle: ".drag-handle",
+          animation: 150,
+          ghostClass: "sortable-ghost",
+          chosenClass: "sortable-chosen",
+          dragClass: "sortable-drag",
+          onEnd: async (evt) => {
+            if (evt.oldIndex === evt.newIndex) return;
+            const [moved] = arr.splice(evt.oldIndex, 1);
+            arr.splice(evt.newIndex, 0, moved);
+            try {
+              await saveFunc();
+            } catch (err) {
+              console.error("Falha ao salvar ordem:", err);
+            }
+            renderFunc();
+          },
+        });
+      }
+
+      function renderFixedCostsList(editingIdx = -1) {
+        const list = document.getElementById("fixedCostsList");
+        if (!list) return;
+        if (!fixedCosts.length) {
+          list.innerHTML = `<div class="empty">Nenhuma despesa fixa cadastrada ainda.</div>`;
+          return;
+        }
+        const total = getFixedCostsTotal();
+        const items = fixedCosts
+          .map((item, idx) => {
+            if (idx === editingIdx) {
+              return `
+                <div class="fixed-item">
+                  <div class="fixed-item-edit-row">
+                    <input type="text" class="fixed-edit-name" value="${escapeHtml(item.name)}" placeholder="Nome" />
+                    <input type="text" class="fixed-edit-amount" value="${item.amount.toFixed(2).replace(".", ",")}" inputmode="numeric" placeholder="0,00" />
+                  </div>
+                  <button class="fixed-save-btn" data-save-idx="${idx}" type="button">✓ Salvar</button>
+                  <button class="fixed-cancel-btn" data-cancel-idx="${idx}" type="button">Cancelar</button>
+                </div>`;
+            }
+            return `
+              <div class="fixed-item">
+                <span class="drag-handle" title="Arrastar para reordenar">≡</span>
+                <span class="fixed-item-name">${escapeHtml(item.name)}</span>
+                <span class="fixed-item-amount">${formatCurrency(item.amount)}</span>
+                <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
+                <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+              </div>`;
+          })
+          .join("");
+        list.innerHTML = `
+          <div class="fixed-total-row" style="border-top: none; border-bottom: 2px solid var(--line); margin-bottom: 4px; padding-bottom: 14px; padding-top: 0">
+            <span>Total mensal</span>
+            <span>${formatCurrency(total)}</span>
+          </div>
+          <div class="fixed-items-container">${items}</div>
+          <div class="fixed-total-row">
+            <span>Total mensal</span>
+            <span>${formatCurrency(total)}</span>
+          </div>`;
+
+        // Edit button: re-render with that row in edit mode
+        list.querySelectorAll("[data-edit-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            renderFixedCostsList(Number(btn.dataset.editIdx));
+          });
+        });
+
+        // Delete button
+        list.querySelectorAll("[data-delete-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.dataset.deleteIdx);
+            const item = fixedCosts[idx];
+            confirmDelete(
+              `Remover "${item.name}"?`,
+              `O valor de ${formatCurrency(item.amount)} será removido das despesas fixas.`,
+              async () => {
+                fixedCosts.splice(idx, 1);
+                await saveFixedCosts();
+                renderFixedCostsList();
+                renderFixedCostsCard();
+                renderAverages();
+              },
+            );
+          });
+        });
+
+        // Save button
+        list.querySelectorAll("[data-save-idx]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const idx = Number(btn.dataset.saveIdx);
+            const row = btn.closest(".fixed-item");
+            const nameVal = row.querySelector(".fixed-edit-name").value.trim();
+            const rawAmt = row.querySelector(".fixed-edit-amount").value.trim();
+            const amount = parseFloat(
+              rawAmt.replace(/\./g, "").replace(",", "."),
+            );
+            if (!nameVal || isNaN(amount) || amount <= 0) return;
+            fixedCosts[idx] = { name: nameVal, amount };
+            await saveFixedCosts();
+            renderFixedCostsList();
+            renderFixedCostsCard();
+            renderAverages();
+          });
+        });
+
+        // Cancel button
+        list.querySelectorAll("[data-cancel-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => renderFixedCostsList());
+        });
+
+        // Apply BRL mask to amount input when in edit mode
+        const editAmountInput = list.querySelector(".fixed-edit-amount");
+        if (editAmountInput) {
+          editAmountInput.addEventListener("input", applyBrlMask);
+          editAmountInput.focus();
+          editAmountInput.select();
+          // Enter to save, Escape to cancel
+          editAmountInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              e.stopPropagation();
+              list.querySelector("[data-save-idx]").click();
+            }
+            if (e.key === "Escape") {
+              e.stopPropagation();
+              renderFixedCostsList();
+            }
+          });
+          list
+            .querySelector(".fixed-edit-name")
+            .addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                editAmountInput.focus();
+              }
+              if (e.key === "Escape") {
+                e.stopPropagation();
+                renderFixedCostsList();
+              }
+            });
+        }
+        attachDragDrop(list, fixedCosts, saveFixedCosts, renderFixedCostsList);
+      }
+
+      function renderFixedCostsCard() {
+        if (!elements.fixedCostsTotal || !elements.fixedCostsDetail) return;
+        elements.fixedCostsTotal.textContent =
+          formatCurrency(getFixedCostsTotal());
+        elements.fixedCostsDetail.textContent = fixedCosts.length
+          ? `${fixedCosts.length} despesa(s) recorrente(s)`
+          : "Nenhuma cadastrada — veja a aba Despesas Fixas";
+      }
+
+      // ── Fixed (recurring) income ─────────────────────────────────────────
+
+      async function loadFixedIncome() {
+        if (backendAvailable) {
+          try {
+            const resp = await fetch(
+              `${BACKEND_URL}/api/settings/fixed-income`,
+            );
+            if (!resp.ok) throw new Error("fixed-income fetch failed");
+            const data = await resp.json();
+            fixedIncome = data.map((i) => ({
+              name: i.label,
+              amount: i.amount,
+            }));
+            return;
+          } catch (err) {
+            console.warn("Could not load fixed income from backend:", err);
+          }
+        }
+        // Offline fallback
+        try {
+          fixedIncome = JSON.parse(
+            localStorage.getItem("expense-fixed-income") || "[]",
+          );
+        } catch {
+          fixedIncome = [];
+        }
+      }
+
+      async function saveFixedIncome() {
+        if (backendAvailable) {
+          try {
+            await fetch(`${BACKEND_URL}/api/settings/fixed-income`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(
+                fixedIncome.map((i) => ({ label: i.name, amount: i.amount })),
+              ),
+            });
+            return;
+          } catch (err) {
+            console.error("Failed to save fixed income to backend:", err);
+          }
+        }
+        localStorage.setItem(
+          "expense-fixed-income",
+          JSON.stringify(fixedIncome),
+        );
+      }
+
+      async function migrateLocalStorageFixedIncomeToBackend() {
+        const migrated = localStorage.getItem("expense-fixed-income-migrated");
+        if (migrated) return;
+        const stored = localStorage.getItem("expense-fixed-income");
+        if (!stored || !stored.trim() || stored === "[]") return;
+        try {
+          const resp = await fetch(`${BACKEND_URL}/api/settings/fixed-income`);
+          if (!resp.ok) return;
+          const existing = await resp.json();
+          if (existing.length) {
+            localStorage.setItem("expense-fixed-income-migrated", "1");
+            return;
+          }
+          const parsed = JSON.parse(stored);
+          await fetch(`${BACKEND_URL}/api/settings/fixed-income`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(
+              parsed.map((i) => ({ label: i.name, amount: i.amount })),
+            ),
+          });
+          localStorage.setItem("expense-fixed-income-migrated", "1");
+          console.log(
+            "[migration] fixed income migrated from localStorage to DB",
+          );
+        } catch (err) {
+          console.warn("[migration] Could not migrate fixed income:", err);
+        }
+      }
+
+      function getFixedIncomeTotal() {
+        return fixedIncome.reduce((sum, item) => sum + (item.amount || 0), 0);
+      }
+
+      async function addFixedIncome() {
+        const nameInput = document.getElementById("fixedIncomeNameInput");
+        const amountInput = document.getElementById("fixedIncomeAmountInput");
+        const nameError = document.getElementById("fixedIncomeNameError");
+        const amountError = document.getElementById("fixedIncomeAmountError");
+        const name = nameInput.value.trim();
+        const rawAmount = amountInput.value.trim();
+
+        let valid = true;
+
+        if (!name) {
+          nameInput.classList.add("fixed-input-invalid");
+          nameError.textContent = "Informe o nome da receita.";
+          valid = false;
+        } else {
+          nameInput.classList.remove("fixed-input-invalid");
+          nameError.textContent = "";
+        }
+
+        const normalized = rawAmount.replace(/\./g, "").replace(",", ".");
+        const amount = parseFloat(normalized);
+        if (!rawAmount || isNaN(amount) || amount <= 0) {
+          amountInput.classList.add("fixed-input-invalid");
+          amountError.textContent = "Informe um valor válido maior que zero.";
+          valid = false;
+        } else {
+          amountInput.classList.remove("fixed-input-invalid");
+          amountError.textContent = "";
+        }
+
+        if (!valid) {
+          if (!name) nameInput.focus();
+          else amountInput.focus();
+          return;
+        }
+
+        fixedIncome.push({ name, amount });
+        await saveFixedIncome();
+        nameInput.value = "";
+        amountInput.value = "";
+        nameInput.focus();
+        renderFixedIncomeList();
+        renderFixedIncomeCard();
+        renderAverages();
+      }
+
+      function renderFixedIncomeList(editingIdx = -1) {
+        const list = document.getElementById("fixedIncomeList");
+        if (!list) return;
+        if (!fixedIncome.length) {
+          list.innerHTML = `<div class="empty">Nenhuma receita fixa cadastrada ainda.</div>`;
+          return;
+        }
+        const total = getFixedIncomeTotal();
+        const items = fixedIncome
+          .map((item, idx) => {
+            if (idx === editingIdx) {
+              return `
+                <div class="fixed-item">
+                  <div class="fixed-item-edit-row">
+                    <input type="text" class="fixed-edit-name" value="${escapeHtml(item.name)}" placeholder="Nome" />
+                    <input type="text" class="fixed-edit-amount" value="${item.amount.toFixed(2).replace(".", ",")}" inputmode="numeric" placeholder="0,00" />
+                  </div>
+                  <button class="fixed-save-btn" data-save-idx="${idx}" type="button">✓ Salvar</button>
+                  <button class="fixed-cancel-btn" data-cancel-idx="${idx}" type="button">Cancelar</button>
+                </div>`;
+            }
+            return `
+              <div class="fixed-item">
+                <span class="drag-handle" title="Arrastar para reordenar">≡</span>
+                <span class="fixed-item-name">${escapeHtml(item.name)}</span>
+                <span class="fixed-item-amount fixed-item-amount--income">${formatCurrency(item.amount)}</span>
+                <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
+                <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+              </div>`;
+          })
+          .join("");
+        list.innerHTML = `
+          <div class="fixed-total-row" style="border-top: none; border-bottom: 2px solid var(--line); margin-bottom: 4px; padding-bottom: 14px; padding-top: 0">
+            <span>Total mensal</span>
+            <span style="color: var(--ok)">${formatCurrency(total)}</span>
+          </div>
+          <div class="fixed-items-container">${items}</div>
+          <div class="fixed-total-row">
+            <span>Total mensal</span>
+            <span style="color: var(--ok)">${formatCurrency(total)}</span>
+          </div>`;
+
+        list.querySelectorAll("[data-edit-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            renderFixedIncomeList(Number(btn.dataset.editIdx));
+          });
+        });
+
+        list.querySelectorAll("[data-delete-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.dataset.deleteIdx);
+            const item = fixedIncome[idx];
+            confirmDelete(
+              `Remover "${item.name}"?`,
+              `O valor de ${formatCurrency(item.amount)} será removido das receitas fixas.`,
+              async () => {
+                fixedIncome.splice(idx, 1);
+                await saveFixedIncome();
+                renderFixedIncomeList();
+                renderFixedIncomeCard();
+                renderAverages();
+              },
+            );
+          });
+        });
+
+        list.querySelectorAll("[data-save-idx]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const idx = Number(btn.dataset.saveIdx);
+            const row = btn.closest(".fixed-item");
+            const nameVal = row.querySelector(".fixed-edit-name").value.trim();
+            const rawAmt = row.querySelector(".fixed-edit-amount").value.trim();
+            const amount = parseFloat(
+              rawAmt.replace(/\./g, "").replace(",", "."),
+            );
+            if (!nameVal || isNaN(amount) || amount <= 0) return;
+            fixedIncome[idx] = { name: nameVal, amount };
+            await saveFixedIncome();
+            renderFixedIncomeList();
+            renderFixedIncomeCard();
+            renderAverages();
+          });
+        });
+
+        list.querySelectorAll("[data-cancel-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => renderFixedIncomeList());
+        });
+
+        const editAmountInput = list.querySelector(".fixed-edit-amount");
+        if (editAmountInput) {
+          editAmountInput.addEventListener("input", applyBrlMask);
+          editAmountInput.focus();
+          editAmountInput.select();
+          editAmountInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              e.stopPropagation();
+              list.querySelector("[data-save-idx]").click();
+            }
+            if (e.key === "Escape") {
+              e.stopPropagation();
+              renderFixedIncomeList();
+            }
+          });
+          list
+            .querySelector(".fixed-edit-name")
+            .addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                editAmountInput.focus();
+              }
+              if (e.key === "Escape") {
+                e.stopPropagation();
+                renderFixedIncomeList();
+              }
+            });
+        }
+        attachDragDrop(
+          list,
+          fixedIncome,
+          saveFixedIncome,
+          renderFixedIncomeList,
+        );
+      }
+
+      function renderFixedIncomeCard() {
+        if (!elements.fixedIncomeTotal || !elements.fixedIncomeDetail) return;
+        elements.fixedIncomeTotal.textContent = formatCurrency(
+          getFixedIncomeTotal(),
+        );
+        elements.fixedIncomeDetail.textContent = fixedIncome.length
+          ? `${fixedIncome.length} receita(s) recorrente(s)`
+          : "Nenhuma cadastrada — veja a aba Receitas Fixas";
+      }
+    </script>
+  </body>
+</html>

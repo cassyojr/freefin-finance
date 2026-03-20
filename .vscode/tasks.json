@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "open index",
+      "type": "shell",
+      "command": "Start-Process 'http://localhost:5500/index.html'",
+      "presentation": {
+        "reveal": "never",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "py run dev",
+      "type": "shell",
+      "command": "$root='${workspaceFolder}'; $python=(Join-Path $root '.venv\\Scripts\\python.exe'); if (-not (Get-NetTCPConnection -LocalPort 5500 -State Listen -ErrorAction SilentlyContinue)) { Start-Process -FilePath $python -ArgumentList '-m','http.server','5500','--bind','127.0.0.1' -WorkingDirectory $root }; Start-Process 'http://localhost:5500/index.html'; & $python -m uvicorn src.interface.main:app --reload --port 8000",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

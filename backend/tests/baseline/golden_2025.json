@@ -1,0 +1,444 @@
+{
+  "captured_at": "2026-01-01T00:00:00.000000+00:00",
+  "_note": "Mock data — replace with your own by running scripts/capture_baseline.py",
+  "tolerance": 0.01,
+  "pdf_count": 12,
+  "periods": {
+    "2025-01": {
+      "source_file": "2025-01.pdf",
+      "statement_label": "Janeiro/2025",
+      "official_total": 3200.00,
+      "parsed_total": 3200.00,
+      "diff": 0.0,
+      "transaction_count": 45,
+      "debit_count": 43,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 520.00,
+        "Compras Online": 380.00,
+        "Outros": 1480.00,
+        "Saúde": 220.00,
+        "Transporte": 350.00,
+        "Vestuário": 150.00,
+        "Viagem": 100.00
+      }
+    },
+    "2025-02": {
+      "source_file": "2025-02.pdf",
+      "statement_label": "Fevereiro/2025",
+      "official_total": 2850.00,
+      "parsed_total": 2850.00,
+      "diff": 0.0,
+      "transaction_count": 38,
+      "debit_count": 37,
+      "credit_count": 1,
+      "categories": {
+        "Alimentação": 490.00,
+        "Compras Online": 310.00,
+        "Outros": 1320.00,
+        "Saúde": 180.00,
+        "Transporte": 400.00,
+        "Viagem": 150.00
+      }
+    },
+    "2025-03": {
+      "source_file": "2025-03.pdf",
+      "statement_label": "Março/2025",
+      "official_total": 3100.00,
+      "parsed_total": 3100.00,
+      "diff": 0.0,
+      "transaction_count": 42,
+      "debit_count": 40,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 530.00,
+        "Compras Online": 270.00,
+        "Outros": 1450.00,
+        "Saúde": 200.00,
+        "Serviços": 120.00,
+        "Transporte": 380.00,
+        "Viagem": 150.00
+      }
+    },
+    "2025-04": {
+      "source_file": "2025-04.pdf",
+      "statement_label": "Abril/2025",
+      "official_total": 2750.00,
+      "parsed_total": 2750.00,
+      "diff": 0.0,
+      "transaction_count": 36,
+      "debit_count": 35,
+      "credit_count": 1,
+      "categories": {
+        "Alimentação": 460.00,
+        "Compras Online": 290.00,
+        "Outros": 1270.00,
+        "Saúde": 160.00,
+        "Serviços": 120.00,
+        "Transporte": 300.00,
+        "Vestuário": 150.00
+      }
+    },
+    "2025-05": {
+      "source_file": "2025-05.pdf",
+      "statement_label": "Maio/2025",
+      "official_total": 3050.00,
+      "parsed_total": 3050.00,
+      "diff": 0.0,
+      "transaction_count": 40,
+      "debit_count": 38,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 510.00,
+        "Compras Online": 320.00,
+        "Outros": 1380.00,
+        "Saúde": 240.00,
+        "Transporte": 450.00,
+        "Vestuário": 150.00
+      }
+    },
+    "2025-06": {
+      "source_file": "2025-06.pdf",
+      "statement_label": "Junho/2025",
+      "official_total": 2900.00,
+      "parsed_total": 2900.00,
+      "diff": 0.0,
+      "transaction_count": 39,
+      "debit_count": 38,
+      "credit_count": 1,
+      "categories": {
+        "Alimentação": 500.00,
+        "Compras Online": 350.00,
+        "Entretenimento": 80.00,
+        "Outros": 1250.00,
+        "Saúde": 270.00,
+        "Transporte": 300.00,
+        "Vestuário": 150.00
+      }
+    },
+    "2025-07": {
+      "source_file": "2025-07.pdf",
+      "statement_label": "Julho/2025",
+      "official_total": 3300.00,
+      "parsed_total": 3300.00,
+      "diff": 0.0,
+      "transaction_count": 44,
+      "debit_count": 42,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 540.00,
+        "Compras Online": 400.00,
+        "Entretenimento": 80.00,
+        "Outros": 1480.00,
+        "Saúde": 300.00,
+        "Transporte": 350.00,
+        "Vestuário": 150.00
+      }
+    },
+    "2025-08": {
+      "source_file": "2025-08.pdf",
+      "statement_label": "Agosto/2025",
+      "official_total": 2600.00,
+      "parsed_total": 2600.00,
+      "diff": 0.0,
+      "transaction_count": 35,
+      "debit_count": 33,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 470.00,
+        "Compras Online": 360.00,
+        "Entretenimento": 80.00,
+        "Outros": 1090.00,
+        "Saúde": 350.00,
+        "Transporte": 250.00
+      }
+    },
+    "2025-09": {
+      "source_file": "2025-09.pdf",
+      "statement_label": "Setembro/2025",
+      "official_total": 2400.00,
+      "parsed_total": 2400.00,
+      "diff": 0.0,
+      "transaction_count": 33,
+      "debit_count": 31,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 440.00,
+        "Compras Online": 280.00,
+        "Entretenimento": 80.00,
+        "Outros": 1030.00,
+        "Saúde": 300.00,
+        "Transporte": 270.00
+      }
+    },
+    "2025-10": {
+      "source_file": "2025-10.pdf",
+      "statement_label": "Outubro/2025",
+      "official_total": 2950.00,
+      "parsed_total": 2950.00,
+      "diff": 0.0,
+      "transaction_count": 41,
+      "debit_count": 39,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 480.00,
+        "Compras Online": 310.00,
+        "Entretenimento": 90.00,
+        "Outros": 1280.00,
+        "Saúde": 290.00,
+        "Transporte": 350.00,
+        "Vestuário": 150.00
+      }
+    },
+    "2025-11": {
+      "source_file": "2025-11.pdf",
+      "statement_label": "Novembro/2025",
+      "official_total": 2700.00,
+      "parsed_total": 2700.00,
+      "diff": 0.0,
+      "transaction_count": 37,
+      "debit_count": 35,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 460.00,
+        "Compras Online": 250.00,
+        "Entretenimento": 100.00,
+        "Outros": 1180.00,
+        "Saúde": 260.00,
+        "Transporte": 300.00,
+        "Vestuário": 150.00
+      }
+    },
+    "2025-12": {
+      "source_file": "2025-12.pdf",
+      "statement_label": "Dezembro/2025",
+      "official_total": 3400.00,
+      "parsed_total": 3400.00,
+      "diff": 0.0,
+      "transaction_count": 46,
+      "debit_count": 44,
+      "credit_count": 2,
+      "categories": {
+        "Alimentação": 550.00,
+        "Compras Online": 420.00,
+        "Entretenimento": 80.00,
+        "Hobby / Esporte": 200.00,
+        "Outros": 1450.00,
+        "Saúde": 250.00,
+        "Transporte": 300.00,
+        "Vestuário": 150.00
+      }
+    }
+  }
+}
+      "parsed_total": 16141.78,
+      "diff": 0.0,
+      "transaction_count": 138,
+      "debit_count": 137,
+      "credit_count": 1,
+      "categories": {
+        "Compras Online": 728.49,
+        "Entretenimento": 69.8,
+        "Hobby / Esporte": 275.95,
+        "Outros": 12038.84,
+        "Saúde": 696.9,
+        "Serviços": 409.02,
+        "Transporte": 1410.69,
+        "Viagem": 512.09
+      }
+    },
+    "2025-03": {
+      "source_file": "2025-03.pdf",
+      "statement_label": "Março/2025",
+      "official_total": 14412.01,
+      "parsed_total": 14412.01,
+      "diff": 0.0,
+      "transaction_count": 163,
+      "debit_count": 156,
+      "credit_count": 7,
+      "categories": {
+        "Compras Online": 685.23,
+        "Entretenimento": 69.8,
+        "Outros": 10353.03,
+        "Saúde": 733.8,
+        "Serviços": 126.58,
+        "Transporte": 1931.48,
+        "Viagem": 512.09
+      }
+    },
+    "2025-04": {
+      "source_file": "2025-04.pdf",
+      "statement_label": "Abril/2025",
+      "official_total": 10916.49,
+      "parsed_total": 10916.49,
+      "diff": 0.0,
+      "transaction_count": 111,
+      "debit_count": 109,
+      "credit_count": 2,
+      "categories": {
+        "Compras Online": 771.2,
+        "Entretenimento": 69.8,
+        "Outros": 7778.81,
+        "Saúde": 891.75,
+        "Serviços": 145.95,
+        "Transporte": 689.4,
+        "Vestuário": 57.49,
+        "Viagem": 512.09
+      }
+    },
+    "2025-05": {
+      "source_file": "2025-05.pdf",
+      "statement_label": "Maio/2025",
+      "official_total": 11424.57,
+      "parsed_total": 11424.57,
+      "diff": 0.0,
+      "transaction_count": 112,
+      "debit_count": 107,
+      "credit_count": 5,
+      "categories": {
+        "Compras Online": 747.35,
+        "Entretenimento": 69.8,
+        "Outros": 7649.59,
+        "Saúde": 1113.91,
+        "Transporte": 1216.02,
+        "Vestuário": 115.81,
+        "Viagem": 512.09
+      }
+    },
+    "2025-06": {
+      "source_file": "2025-06.pdf",
+      "statement_label": "Junho/2025",
+      "official_total": 10607.87,
+      "parsed_total": 10607.87,
+      "diff": 0.0,
+      "transaction_count": 119,
+      "debit_count": 118,
+      "credit_count": 1,
+      "categories": {
+        "Compras Online": 1206.11,
+        "Entretenimento": 71.8,
+        "Outros": 7090.74,
+        "Saúde": 1299.33,
+        "Serviços": 129.44,
+        "Transporte": 752.14,
+        "Vestuário": 58.31
+      }
+    },
+    "2025-07": {
+      "source_file": "2025-07.pdf",
+      "statement_label": "Julho/2025",
+      "official_total": 11136.85,
+      "parsed_total": 11136.85,
+      "diff": 0.0,
+      "transaction_count": 115,
+      "debit_count": 112,
+      "credit_count": 3,
+      "categories": {
+        "Compras Online": 887.08,
+        "Entretenimento": 71.8,
+        "Outros": 8611.31,
+        "Saúde": 1140.42,
+        "Serviços": 34.73,
+        "Transporte": 333.18,
+        "Vestuário": 58.33
+      }
+    },
+    "2025-08": {
+      "source_file": "2025-08.pdf",
+      "statement_label": "Agosto/2025",
+      "official_total": 9414.56,
+      "parsed_total": 9414.56,
+      "diff": 0.0,
+      "transaction_count": 96,
+      "debit_count": 93,
+      "credit_count": 3,
+      "categories": {
+        "Compras Online": 1599.54,
+        "Entretenimento": 71.8,
+        "Outros": 5177.68,
+        "Saúde": 1829.78,
+        "Serviços": 54.41,
+        "Transporte": 681.35
+      }
+    },
+    "2025-09": {
+      "source_file": "2025-09.pdf",
+      "statement_label": "Setembro/2025",
+      "official_total": 7133.56,
+      "parsed_total": 7133.56,
+      "diff": 0.0,
+      "transaction_count": 90,
+      "debit_count": 87,
+      "credit_count": 3,
+      "categories": {
+        "Compras Online": 799.31,
+        "Entretenimento": 71.8,
+        "Impostos": 0.0,
+        "Outros": 4737.89,
+        "Saúde": 1362.51,
+        "Transporte": 132.05,
+        "Vestuário": 30.0
+      }
+    },
+    "2025-10": {
+      "source_file": "2025-10.pdf",
+      "statement_label": "Outubro/2025",
+      "official_total": 10691.41,
+      "parsed_total": 10691.41,
+      "diff": 0.0,
+      "transaction_count": 94,
+      "debit_count": 91,
+      "credit_count": 3,
+      "categories": {
+        "Compras Online": 406.42,
+        "Entretenimento": 86.66,
+        "Impostos": 0.51,
+        "Outros": 8939.3,
+        "Saúde": 720.34,
+        "Serviços": 16.58,
+        "Transporte": 414.71,
+        "Vestuário": 106.89
+      }
+    },
+    "2025-11": {
+      "source_file": "2025-11.pdf",
+      "statement_label": "Novembro/2025",
+      "official_total": 8000.31,
+      "parsed_total": 8000.31,
+      "diff": 0.0,
+      "transaction_count": 110,
+      "debit_count": 106,
+      "credit_count": 4,
+      "categories": {
+        "Compras Online": 351.49,
+        "Entretenimento": 97.34,
+        "Impostos": 0.85,
+        "Outros": 6212.17,
+        "Saúde": 805.79,
+        "Serviços": 52.12,
+        "Transporte": 276.2,
+        "Vestuário": 204.35
+      }
+    },
+    "2025-12": {
+      "source_file": "2025-12.pdf",
+      "statement_label": "Dezembro/2025",
+      "official_total": 10488.77,
+      "parsed_total": 10488.77,
+      "diff": 0.0,
+      "transaction_count": 124,
+      "debit_count": 121,
+      "credit_count": 3,
+      "categories": {
+        "Compras Online": 758.56,
+        "Entretenimento": 71.8,
+        "Hobby / Esporte": 233.34,
+        "Outros": 7586.28,
+        "Saúde": 930.02,
+        "Serviços": 13.65,
+        "Transporte": 546.49,
+        "Vestuário": 348.63
+      }
+    }
+  }
+}
