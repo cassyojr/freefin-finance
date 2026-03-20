@@ -14,6 +14,7 @@
       })();
     </script>
 
+
     <link rel="stylesheet" href="styles/style.css" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -2845,7 +2846,7 @@
           })
           .join("");
         list.innerHTML = `
-          <div class="fixed-total-row" style="border-top: none; border-bottom: 2px solid var(--line); margin-bottom: 4px; padding-bottom: 14px; padding-top: 0">
+          <div class="fixed-total-row">
             <span>Total mensal</span>
             <span>${formatCurrency(total)}</span>
           </div>
@@ -3111,7 +3112,7 @@
           })
           .join("");
         list.innerHTML = `
-          <div class="fixed-total-row" style="border-top: none; border-bottom: 2px solid var(--line); margin-bottom: 4px; padding-bottom: 14px; padding-top: 0">
+          <div class="fixed-total-row">
             <span>Total mensal</span>
             <span style="color: var(--ok)">${formatCurrency(total)}</span>
           </div>
