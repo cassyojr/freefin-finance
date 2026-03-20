@@ -91,9 +91,7 @@
 body {
   margin: 0;
   font-family:
-    "Inter",
     system-ui,
-    -apple-system,
     sans-serif;
   background: var(--bg);
   color: var(--text);
@@ -188,7 +186,7 @@ h1 {
   padding: 11px 20px;
   cursor: pointer;
   font: inherit;
-  font-family: "Inter", sans-serif;
+  font-family: system-ui, sans-serif;
   font-weight: 500;
   transition:
     transform 0.18s ease,
@@ -421,7 +419,7 @@ h1 {
 
 .metric-value {
   margin-top: 10px;
-  font-family: "Manrope", "Inter", sans-serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.35rem, 1.8vw, 1.75rem);
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -464,7 +462,7 @@ textarea {
   color: var(--text);
   padding: 11px 14px;
   font: inherit;
-  font-family: "Inter", sans-serif;
+  font-family: system-ui, sans-serif;
   line-height: 1.4;
   transition:
     background 0.2s,
