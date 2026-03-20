@@ -1191,6 +1191,15 @@
           _activeRules.unshift({ keyword: keyword.toLowerCase(), category });
           await saveRulesArray();
           renderRulesTable();
+          reapplyCategories();
+          closeCategoryModal();
+        };
+
+        // Replace previous listener to avoid stacking.
+        const newSaveBtn = elements.modalSaveBtn.cloneNode(true);
+        elements.modalSaveBtn.replaceWith(newSaveBtn);
+        elements.modalSaveBtn = document.getElementById("modalSaveBtn");
+        elements.modalSaveBtn.addEventListener("click", saveHandler);
 
         elements.categoryModalBackdrop.classList.remove("hidden");
       }
