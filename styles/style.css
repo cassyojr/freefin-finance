@@ -1134,13 +1134,13 @@ textarea {
 
 #fixedAddBtn {
   align-self: flex-end;
-  margin-bottom: 0;
+  margin-bottom: calc(1.1em + 4px);  /* offset = error-span min-height + margin-top */
   flex-shrink: 0;
 }
 
 #fixedIncomeAddBtn {
   align-self: flex-end;
-  margin-bottom: 0;
+  margin-bottom: calc(1.1em + 4px);
   flex-shrink: 0;
 }
 
