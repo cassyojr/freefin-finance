@@ -14,7 +14,12 @@
       })();
     </script>
 
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles/style.css" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -383,25 +388,50 @@
             <div>
               <h3>Mapa de categorias</h3>
               <div class="muted" style="margin-top: 4px; font-size: 0.9rem">
-                Edite regras no formato <code>palavra=Categoria</code>
+                Crie regras de palavra-chave para categorizar compras automaticamente.
+                Novas importações sempre começam como <strong>Outros</strong>.
               </div>
             </div>
           </div>
-          <label>
-            Regras personalizadas
-            <textarea id="rulesEditor"></textarea>
-          </label>
-          <div class="hero-actions" style="margin-top: 12px">
-            <button class="button" id="saveRulesBtn" type="button">
-              Salvar regras
+
+          <!-- Add rule form -->
+          <div class="fixed-add-row" id="ruleAddRow">
+            <label style="flex: 1; min-width: 200px">
+              Palavra-chave
+              <input
+                id="ruleKeywordInput"
+                type="text"
+                placeholder="ex.: netflix, amazon, ifood"
+              />
+              <span class="fixed-input-error" id="ruleKeywordError"></span>
+            </label>
+            <label style="min-width: 160px">
+              Categoria
+              <input
+                id="ruleCategoryInput"
+                type="text"
+                placeholder="ex.: Entretenimento"
+                list="ruleCategoryDatalist"
+              />
+              <datalist id="ruleCategoryDatalist"></datalist>
+              <span class="fixed-input-error" id="ruleCategoryError"></span>
+            </label>
+            <button class="button" id="ruleAddBtn" type="button">
+              + Adicionar
             </button>
+          </div>
+
+          <!-- Rules table -->
+          <div id="rulesTableContainer" style="margin-top: 20px"></div>
+
+          <div class="hero-actions" style="margin-top: 16px">
             <button class="button-ghost" id="resetRulesBtn" type="button">
               Restaurar padrão
             </button>
           </div>
           <p class="footer-note">
-            As regras são salvas no navegador deste projeto. Se uma compra não
-            encaixar em nada, ela fica em <strong>Outros</strong>.
+            A ordem das regras define a prioridade. Arraste para reordenar.
+            Se uma compra não encaixar em nenhuma regra, fica em <strong>Outros</strong>.
           </p>
         </section>
       </div>
@@ -758,64 +788,18 @@
         11: "Novembro",
         12: "Dezembro",
       };
-      const DEFAULT_CATEGORY_RULES = [
-        { keyword: "panvel", category: "Saúde" },
-        { keyword: "drogaria", category: "Saúde" },
-        { keyword: "farmacia", category: "Saúde" },
-        { keyword: "amais", category: "Saúde" },
-        { keyword: "vaccine", category: "Saúde" },
-        { keyword: "pague menos", category: "Saúde" },
-        { keyword: "clinica", category: "Saúde" },
-        { keyword: "hospital", category: "Saúde" },
-        { keyword: "atacadao", category: "Alimentação" },
-        { keyword: "festval", category: "Alimentação" },
-        { keyword: "edvilson", category: "Alimentação" },
-        { keyword: "quero cafete", category: "Alimentação" },
-        { keyword: "bd alimentos", category: "Alimentação" },
-        { keyword: "mc donalds", category: "Alimentação" },
-        { keyword: "grossi", category: "Alimentação" },
-        { keyword: "sfiha", category: "Alimentação" },
-        { keyword: "bier hoff", category: "Alimentação" },
-        { keyword: "condor", category: "Alimentação" },
-        { keyword: "bonna", category: "Alimentação" },
-        { keyword: "jardim dos", category: "Alimentação" },
-        { keyword: "ifood", category: "Delivery" },
-        { keyword: "amazon", category: "Compras Online" },
-        { keyword: "mercadolivre", category: "Compras Online" },
-        { keyword: "webcontinent", category: "Compras Online" },
-        { keyword: "havan", category: "Vestuário" },
-        { keyword: "baby chic", category: "Vestuário" },
-        { keyword: "lady lili", category: "Vestuário" },
-        { keyword: "havaianas", category: "Vestuário" },
-        { keyword: "bekos", category: "Vestuário" },
-        { keyword: "damarate", category: "Vestuário" },
-        { keyword: "lupo", category: "Vestuário" },
-        { keyword: "oboticar", category: "Vestuário" },
-        { keyword: "decathlon", category: "Hobby / Esporte" },
-        { keyword: "pet shop", category: "Hobby / Esporte" },
-        { keyword: "evo pet", category: "Hobby / Esporte" },
-        { keyword: "octoshop", category: "Hobby / Esporte" },
-        { keyword: "academia", category: "Hobby / Esporte" },
-        { keyword: "leroy", category: "Hobby / Esporte" },
-        { keyword: "digital foto", category: "Hobby / Esporte" },
-        { keyword: "auto posto", category: "Transporte" },
-        { keyword: "petro", category: "Transporte" },
-        { keyword: "estacionamen", category: "Transporte" },
-        { keyword: "estapar", category: "Transporte" },
-        { keyword: "shellbox", category: "Transporte" },
-        { keyword: "posto", category: "Transporte" },
-        { keyword: "netflix", category: "Entretenimento" },
-        { keyword: "steam", category: "Entretenimento" },
-        { keyword: "youtube", category: "Entretenimento" },
-        { keyword: "trademap", category: "Investimentos" },
-        { keyword: "suno", category: "Investimentos" },
-        { keyword: "azul", category: "Viagem" },
-        { keyword: "ton", category: "Serviços" },
-        { keyword: "luiz fabiano", category: "Serviços" },
-        { keyword: "iof", category: "Impostos" },
-        { keyword: "anuidade", category: "Impostos" },
-        { keyword: "imposto", category: "Impostos" },
+      // Default selectable category names. No keyword rules seeded by default —
+      // all new imports start as "Outros". Users build their own rules.
+      // "Restaurar padrão" resets the rule table to empty (keeping only these names as options).
+      const DEFAULT_CATEGORY_NAMES = [
+        "Outros",
+        "Saúde",
+        "Alimentação",
+        "Entretenimento",
+        "Compras Online",
       ];
+      // Legacy constant kept as empty array so any surviving reference doesn't throw.
+      const DEFAULT_CATEGORY_RULES = [];
       const CURRENCY_FORMATTER = new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL",
@@ -861,8 +845,6 @@
         periodSummary: document.getElementById("periodSummary"),
         tableContainer: document.getElementById("tableContainer"),
         installmentGroups: document.getElementById("installmentGroups"),
-        rulesEditor: document.getElementById("rulesEditor"),
-        saveRulesBtn: document.getElementById("saveRulesBtn"),
         resetRulesBtn: document.getElementById("resetRulesBtn"),
         categoryModalBackdrop: document.getElementById("categoryModalBackdrop"),
         modalMerchant: document.getElementById("modalMerchant"),
@@ -1023,15 +1005,47 @@
           });
         });
 
-        elements.saveRulesBtn.addEventListener("click", async () => {
-          await saveRulesToBackend(elements.rulesEditor.value);
-          reapplyCategories();
+        elements.resetRulesBtn.addEventListener("click", async () => {
+          confirmDelete(
+            "Restaurar padrão",
+            "Isso removerá todas as regras criadas. Continuar?",
+            async () => {
+              _activeRules = [];
+              await saveRulesArray();
+              reapplyCategories();
+              renderRulesTable();
+            },
+          );
         });
 
-        elements.resetRulesBtn.addEventListener("click", async () => {
-          await saveRulesToBackend("");
-          await loadRulesEditor();
+        // Add rule form
+        document.getElementById("ruleAddBtn")?.addEventListener("click", async () => {
+          const keyEl = document.getElementById("ruleKeywordInput");
+          const catEl = document.getElementById("ruleCategoryInput");
+          const keyErr = document.getElementById("ruleKeywordError");
+          const catErr = document.getElementById("ruleCategoryError");
+          keyErr.textContent = "";
+          catErr.textContent = "";
+          const keyword = keyEl.value.trim().toLowerCase();
+          const category = catEl.value.trim();
+          let valid = true;
+          if (!keyword) { keyErr.textContent = "Informe uma palavra-chave."; valid = false; }
+          if (!category) { catErr.textContent = "Informe uma categoria."; valid = false; }
+          if (!valid) return;
+          _activeRules.unshift({ keyword, category });
+          await saveRulesArray();
           reapplyCategories();
+          keyEl.value = "";
+          catEl.value = "";
+          renderRulesTable();
+        });
+
+        // Populate category datalist on focus
+        document.getElementById("ruleCategoryInput")?.addEventListener("focus", () => {
+          const dl = document.getElementById("ruleCategoryDatalist");
+          if (!dl) return;
+          const opts = getAllCategoryOptions();
+          dl.innerHTML = opts.map((c) => `<option value="${escapeHtml(c)}"></option>`).join("");
         });
 
         elements.modalCancelBtn.addEventListener("click", closeCategoryModal);
@@ -1140,12 +1154,8 @@
           .join(" ");
         elements.modalNewCategory.value = "";
 
-        // Build chip list from all known categories (rules + already-in-use).
-        const ruleCategories = getActiveRules().map((r) => r.category);
-        const txCategories = allTransactions.map((t) => t.category);
-        const allCategories = [...new Set([...ruleCategories, ...txCategories])]
-          .filter(Boolean)
-          .sort();
+        // Build chip list from all known categories (defaults + user rules + existing transactions).
+        const allCategories = getAllCategoryOptions();
 
         elements.modalCategoryChips.innerHTML = allCategories
           .map((cat) => {
@@ -1177,20 +1187,10 @@
             "";
           if (!keyword || !category) return;
 
-          const current = elements.rulesEditor.value.trim();
-          const newLine = `${keyword}=${category}`;
-          const updated = current ? `${newLine}\n${current}` : newLine;
-          await saveRulesToBackend(updated);
-          await loadRulesEditor();
-          reapplyCategories();
-          closeCategoryModal();
-        };
-
-        // Replace previous listener to avoid stacking.
-        const newSaveBtn = elements.modalSaveBtn.cloneNode(true);
-        elements.modalSaveBtn.replaceWith(newSaveBtn);
-        elements.modalSaveBtn = document.getElementById("modalSaveBtn");
-        elements.modalSaveBtn.addEventListener("click", saveHandler);
+          // Prepend new rule (highest priority) and save.
+          _activeRules.unshift({ keyword: keyword.toLowerCase(), category });
+          await saveRulesArray();
+          renderRulesTable();
 
         elements.categoryModalBackdrop.classList.remove("hidden");
       }
@@ -1687,10 +1687,12 @@
 
       // In-memory store for backend-loaded rules (populated on boot / after save)
       let _loadedRulesText = "";
+      // In-memory parsed rules array (used by the table renderer)
+      let _activeRules = [];
 
       function getActiveRules() {
-        const custom = parseRulesText(_loadedRulesText);
-        return [...custom, ...DEFAULT_CATEGORY_RULES];
+        // Only user-defined rules — no auto-classification defaults.
+        return _activeRules;
       }
 
       function parseRulesText(text) {
@@ -2434,16 +2436,14 @@
           : "Sem filtros aplicados";
       }
 
+      // ── Category rules table ─────────────────────────────────────────────────
+
       async function loadRulesEditor() {
         if (!backendAvailable) {
-          // Offline fallback: use in-memory or localStorage migration data
           const stored = localStorage.getItem("expense-category-rules") || "";
           _loadedRulesText = stored;
-          elements.rulesEditor.value =
-            stored ||
-            DEFAULT_CATEGORY_RULES.map(
-              (r) => `${r.keyword}=${r.category}`,
-            ).join("\n");
+          _activeRules = parseRulesText(stored);
+          renderRulesTable();
           return;
         }
         try {
@@ -2452,45 +2452,184 @@
           );
           if (!resp.ok) throw new Error("category-rules fetch failed");
           const rules = await resp.json();
-          // Rules arrive sorted by priority from backend.
-          // Separate user rules (isDefault=false) from defaults; only show user rules in editor.
-          const userRules = rules.filter((r) => !r.isDefault);
-          const text = userRules
+          _activeRules = rules.map((r) => ({
+            keyword: r.keyword,
+            category: r.category,
+          }));
+          _loadedRulesText = _activeRules
             .map((r) => `${r.keyword}=${r.category}`)
             .join("\n");
-          _loadedRulesText = text;
-          elements.rulesEditor.value =
-            text ||
-            DEFAULT_CATEGORY_RULES.map(
-              (r) => `${r.keyword}=${r.category}`,
-            ).join("\n");
+          renderRulesTable();
         } catch (err) {
           console.warn("Could not load category rules from backend:", err);
         }
       }
 
-      async function saveRulesToBackend(rulesText) {
-        if (!backendAvailable) {
-          localStorage.setItem("expense-category-rules", rulesText);
-          _loadedRulesText = rulesText;
-          return;
-        }
-        const parsed = parseRulesText(rulesText);
-        const payload = parsed.map((r, idx) => ({
+      async function saveRulesArray() {
+        const payload = _activeRules.map((r, idx) => ({
           keyword: r.keyword,
           category: r.category,
           priority: idx,
           isDefault: false,
         }));
+        if (!backendAvailable) {
+          const text = _activeRules
+            .map((r) => `${r.keyword}=${r.category}`)
+            .join("\n");
+          localStorage.setItem("expense-category-rules", text);
+          _loadedRulesText = text;
+          return;
+        }
         try {
           await fetch(`${BACKEND_URL}/api/settings/category-rules`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-          _loadedRulesText = rulesText;
+          _loadedRulesText = _activeRules
+            .map((r) => `${r.keyword}=${r.category}`)
+            .join("\n");
         } catch (err) {
           console.error("Failed to save category rules to backend:", err);
+        }
+      }
+
+      // Legacy compat: kept so openCategoryModal save handler still works.
+      async function saveRulesToBackend(rulesText) {
+        _activeRules = parseRulesText(rulesText);
+        await saveRulesArray();
+        renderRulesTable();
+      }
+
+      // Returns all category names available for selection (defaults + any found in existing rules/transactions).
+      function getAllCategoryOptions() {
+        const fromRules = _activeRules.map((r) => r.category);
+        const fromTransactions = allTransactions.map((t) => t.category);
+        return [
+          ...new Set([
+            ...DEFAULT_CATEGORY_NAMES,
+            ...fromRules,
+            ...fromTransactions,
+          ]),
+        ]
+          .filter(Boolean)
+          .sort();
+      }
+
+      function renderRulesTable(editingIdx = -1) {
+        const container = document.getElementById("rulesTableContainer");
+        if (!container) return;
+
+        if (!_activeRules.length && editingIdx === -1) {
+          container.innerHTML = `
+            <div class="fixed-items-container" id="rulesItemsContainer"></div>
+            <div class="empty" style="padding: 1.5rem 0.5rem; text-align: center;">
+              Nenhuma regra criada ainda. Use o formulário acima para adicionar.
+            </div>`;
+          return;
+        }
+
+        const categoryOptions = getAllCategoryOptions();
+        const rows = _activeRules
+          .map((rule, idx) => {
+            if (idx === editingIdx) {
+              const opts = categoryOptions
+                .map(
+                  (c) =>
+                    `<option value="${escapeHtml(c)}"${c === rule.category ? " selected" : ""}>${escapeHtml(c)}</option>`,
+                )
+                .join("");
+              return `
+                <div class="fixed-item" data-rule-idx="${idx}">
+                  <div class="fixed-item-edit-row">
+                    <input type="text" class="fixed-edit-name" value="${escapeHtml(rule.keyword)}" placeholder="Palavra-chave" />
+                    <select class="fixed-edit-amount">${opts}</select>
+                  </div>
+                  <button class="fixed-save-btn" data-save-idx="${idx}" type="button">✓ Salvar</button>
+                  <button class="fixed-cancel-btn" data-cancel-idx="${idx}" type="button">Cancelar</button>
+                </div>`;
+            }
+            return `
+              <div class="fixed-item" data-rule-idx="${idx}">
+                <span class="drag-handle" title="Arrastar para reordenar">≡</span>
+                <span class="fixed-item-name">${escapeHtml(rule.keyword)}</span>
+                <span class="fixed-item-amount">${escapeHtml(rule.category)}</span>
+                <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
+                <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+              </div>`;
+          })
+          .join("");
+
+        container.innerHTML = `<div class="fixed-items-container" id="rulesItemsContainer">${rows}</div>`;
+
+        // Edit
+        container.querySelectorAll("[data-edit-idx]").forEach((btn) => {
+          btn.addEventListener("click", () =>
+            renderRulesTable(Number(btn.dataset.editIdx)),
+          );
+        });
+
+        // Save inline edit
+        container.querySelectorAll("[data-save-idx]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const idx = Number(btn.dataset.saveIdx);
+            const row = container.querySelector(
+              `[data-rule-idx="${idx}"]`,
+            );
+            const keyword = row
+              .querySelector(".fixed-edit-name")
+              .value.trim()
+              .toLowerCase();
+            const category = row
+              .querySelector(".fixed-edit-amount")
+              .value.trim();
+            if (!keyword || !category) return;
+            _activeRules[idx] = { keyword, category };
+            await saveRulesArray();
+            reapplyCategories();
+            renderRulesTable();
+          });
+        });
+
+        // Cancel
+        container.querySelectorAll("[data-cancel-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => renderRulesTable());
+        });
+
+        // Delete
+        container.querySelectorAll("[data-delete-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.dataset.deleteIdx);
+            confirmDelete(
+              "Remover regra",
+              `Remover a regra "${_activeRules[idx].keyword}"?`,
+              async () => {
+                _activeRules.splice(idx, 1);
+                await saveRulesArray();
+                reapplyCategories();
+                renderRulesTable();
+              },
+            );
+          });
+        });
+
+        // Drag-drop reorder
+        const itemsContainer = document.getElementById("rulesItemsContainer");
+        if (itemsContainer && typeof Sortable !== "undefined" && editingIdx === -1) {
+          Sortable.create(itemsContainer, {
+            handle: ".drag-handle",
+            animation: 150,
+            ghostClass: "sortable-ghost",
+            chosenClass: "sortable-chosen",
+            dragClass: "sortable-drag",
+            onEnd: async (evt) => {
+              if (evt.oldIndex === evt.newIndex) return;
+              const [moved] = _activeRules.splice(evt.oldIndex, 1);
+              _activeRules.splice(evt.newIndex, 0, moved);
+              await saveRulesArray();
+              renderRulesTable();
+            },
+          });
         }
       }
 

@@ -32,66 +32,22 @@ from src.domain.entities import CategoryRule, Transaction
 COLUMN_SPLIT_RATIO = 0.57
 
 # ─────────────────────────────────────────────────────────────
-# Default category rules — identical to DEFAULT_CATEGORY_RULES in index.html
+# Default selectable category names shown in the UI.
+# Used by Restaurar padrão and category picker chips.
+# No keyword rules are seeded by default — all new imports start
+# as "Outros" and users build their own rules.
 # ─────────────────────────────────────────────────────────────
-DEFAULT_CATEGORY_RULES: list[CategoryRule] = [
-    CategoryRule(keyword="panvel",          category="Saúde",           priority=100, is_default=True),
-    CategoryRule(keyword="drogaria",        category="Saúde",           priority=101, is_default=True),
-    CategoryRule(keyword="farmacia",        category="Saúde",           priority=102, is_default=True),
-    CategoryRule(keyword="amais",           category="Saúde",           priority=103, is_default=True),
-    CategoryRule(keyword="vaccine",         category="Saúde",           priority=104, is_default=True),
-    CategoryRule(keyword="pague menos",     category="Saúde",           priority=105, is_default=True),
-    CategoryRule(keyword="clinica",         category="Saúde",           priority=106, is_default=True),
-    CategoryRule(keyword="hospital",        category="Saúde",           priority=107, is_default=True),
-    CategoryRule(keyword="atacadao",        category="Alimentação",     priority=108, is_default=True),
-    CategoryRule(keyword="festval",         category="Alimentação",     priority=109, is_default=True),
-    CategoryRule(keyword="edvilson",        category="Alimentação",     priority=110, is_default=True),
-    CategoryRule(keyword="quero cafete",    category="Alimentação",     priority=111, is_default=True),
-    CategoryRule(keyword="bd alimentos",    category="Alimentação",     priority=112, is_default=True),
-    CategoryRule(keyword="mc donalds",      category="Alimentação",     priority=113, is_default=True),
-    CategoryRule(keyword="grossi",          category="Alimentação",     priority=114, is_default=True),
-    CategoryRule(keyword="sfiha",           category="Alimentação",     priority=115, is_default=True),
-    CategoryRule(keyword="bier hoff",       category="Alimentação",     priority=116, is_default=True),
-    CategoryRule(keyword="condor",          category="Alimentação",     priority=117, is_default=True),
-    CategoryRule(keyword="bonna",           category="Alimentação",     priority=118, is_default=True),
-    CategoryRule(keyword="jardim dos",      category="Alimentação",     priority=119, is_default=True),
-    CategoryRule(keyword="ifood",           category="Delivery",        priority=120, is_default=True),
-    CategoryRule(keyword="amazon",          category="Compras Online",  priority=121, is_default=True),
-    CategoryRule(keyword="mercadolivre",    category="Compras Online",  priority=122, is_default=True),
-    CategoryRule(keyword="webcontinent",    category="Compras Online",  priority=123, is_default=True),
-    CategoryRule(keyword="havan",           category="Vestuário",       priority=124, is_default=True),
-    CategoryRule(keyword="baby chic",       category="Vestuário",       priority=125, is_default=True),
-    CategoryRule(keyword="lady lili",       category="Vestuário",       priority=126, is_default=True),
-    CategoryRule(keyword="havaianas",       category="Vestuário",       priority=127, is_default=True),
-    CategoryRule(keyword="bekos",           category="Vestuário",       priority=128, is_default=True),
-    CategoryRule(keyword="damarate",        category="Vestuário",       priority=129, is_default=True),
-    CategoryRule(keyword="lupo",            category="Vestuário",       priority=130, is_default=True),
-    CategoryRule(keyword="oboticar",        category="Vestuário",       priority=131, is_default=True),
-    CategoryRule(keyword="decathlon",       category="Hobby / Esporte", priority=132, is_default=True),
-    CategoryRule(keyword="pet shop",        category="Hobby / Esporte", priority=133, is_default=True),
-    CategoryRule(keyword="evo pet",         category="Hobby / Esporte", priority=134, is_default=True),
-    CategoryRule(keyword="octoshop",        category="Hobby / Esporte", priority=135, is_default=True),
-    CategoryRule(keyword="academia",        category="Hobby / Esporte", priority=136, is_default=True),
-    CategoryRule(keyword="leroy",           category="Hobby / Esporte", priority=137, is_default=True),
-    CategoryRule(keyword="digital foto",    category="Hobby / Esporte", priority=138, is_default=True),
-    CategoryRule(keyword="auto posto",      category="Transporte",      priority=139, is_default=True),
-    CategoryRule(keyword="petro",           category="Transporte",      priority=140, is_default=True),
-    CategoryRule(keyword="estacionamen",    category="Transporte",      priority=141, is_default=True),
-    CategoryRule(keyword="estapar",         category="Transporte",      priority=142, is_default=True),
-    CategoryRule(keyword="shellbox",        category="Transporte",      priority=143, is_default=True),
-    CategoryRule(keyword="posto",           category="Transporte",      priority=144, is_default=True),
-    CategoryRule(keyword="netflix",         category="Entretenimento",  priority=145, is_default=True),
-    CategoryRule(keyword="steam",           category="Entretenimento",  priority=146, is_default=True),
-    CategoryRule(keyword="youtube",         category="Entretenimento",  priority=147, is_default=True),
-    CategoryRule(keyword="trademap",        category="Investimentos",   priority=148, is_default=True),
-    CategoryRule(keyword="suno",            category="Investimentos",   priority=149, is_default=True),
-    CategoryRule(keyword="azul",            category="Viagem",          priority=150, is_default=True),
-    CategoryRule(keyword="ton",             category="Serviços",        priority=151, is_default=True),
-    CategoryRule(keyword="luiz fabiano",    category="Serviços",        priority=152, is_default=True),
-    CategoryRule(keyword="iof",             category="Impostos",        priority=153, is_default=True),
-    CategoryRule(keyword="anuidade",        category="Impostos",        priority=154, is_default=True),
-    CategoryRule(keyword="imposto",         category="Impostos",        priority=155, is_default=True),
+DEFAULT_CATEGORY_NAMES: list[str] = [
+    "Outros",
+    "Saúde",
+    "Alimentação",
+    "Entretenimento",
+    "Compras Online",
 ]
+
+# No keyword rules are seeded — kept as an empty list so the parser
+# always assigns "Outros" unless the user has created their own rules.
+DEFAULT_CATEGORY_RULES: list[CategoryRule] = []
 
 _TAX_PATTERNS = [
     {"label": "repasse de iof",      "merchant": "IOF Internacional"},
