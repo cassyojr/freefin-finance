@@ -117,6 +117,14 @@ body {
     box-shadow 0.25s;
 }
 
+/* Panels (e.g. installment cards) get a tonal background + ghost border
+   so they read clearly when stacked against the page surface */
+.panel {
+  background: var(--surface-container-low);
+  box-shadow: 0 4px 16px rgba(0, 28, 98, 0.07);
+  outline: 1px solid var(--outline-variant);
+}
+
 /* tonal elevation: sections inside cards sit one level higher */
 .hero {
   background: var(--surface-container-low);
@@ -396,10 +404,10 @@ h1 {
 .metric-value {
   margin-top: 10px;
   font-family: 'Manrope', 'Inter', sans-serif;
-  font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+  font-size: clamp(1.35rem, 1.8vw, 1.75rem);
   font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
 .metric-detail {
@@ -1126,13 +1134,13 @@ textarea {
 
 #fixedAddBtn {
   align-self: flex-end;
-  margin-bottom: calc(1.1em + 4px);
+  margin-bottom: 0;
   flex-shrink: 0;
 }
 
 #fixedIncomeAddBtn {
   align-self: flex-end;
-  margin-bottom: calc(1.1em + 4px);
+  margin-bottom: 0;
   flex-shrink: 0;
 }
 
@@ -1140,11 +1148,11 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0.9rem 4px;
+  padding: 1.1rem 0.9rem;        /* matches .fixed-item vertical rhythm */
   font-weight: 700;
   font-size: 1rem;
-  background: var(--surface-container-low); /* tonal divider via elevation shift */
-  border-radius: 0 0 8px 8px;
+  background: var(--surface-container);
+  border-radius: 8px;
   margin-top: 4px;
 }
 
