@@ -64,7 +64,7 @@
   --surface-container-lowest: #0d0f14;
   --surface-bright: #252932;
   --surface-tint: rgba(126, 173, 255, 0.08);
-  --outline-variant: rgba(126, 173, 255, 0.18);
+  --outline-variant: rgba(126, 173, 255, 0.35);
 
   --bg: var(--surface);
   --bg-soft: var(--surface-container-low);
@@ -119,6 +119,7 @@ body {
   background: var(--surface-container-lowest);
   border-radius: 16px; /* architectural squareness per styleguide */
   box-shadow: var(--shadow);
+  outline: 1px solid var(--outline-variant);
   transition:
     background 0.25s,
     box-shadow 0.25s;
@@ -464,6 +465,7 @@ textarea {
   padding: 11px 14px;
   font: inherit;
   font-family: "Inter", sans-serif;
+  line-height: 1.4;
   transition:
     background 0.2s,
     box-shadow 0.2s,
@@ -478,13 +480,9 @@ textarea:focus {
   box-shadow: 0 0 0 2px var(--primary);
 }
 
-/* Money inputs — headline-lg scale */
+/* Money inputs */
 #fixedAmountInput,
 #fixedIncomeAmountInput {
-  font-family: "Manrope", "Inter", sans-serif;
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
   text-align: right;
 }
 
@@ -986,6 +984,11 @@ textarea {
   gap: 10px;
   align-items: flex-end;
   flex-wrap: wrap;
+}
+
+.fixed-add-row input[type="text"] {
+  align-self: start; /* prevent CSS grid stretch inside label */
+  height: 44px; /* explicit identical height for both fields */
 }
 
 .fixed-item {
