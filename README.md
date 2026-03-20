@@ -12,9 +12,21 @@
 
 ## Overview
 
-Freefin Finance parses your Nubank monthly PDF statements, stores the transactions in a local SQLite database, and gives you an interactive dashboard to explore your spending — by category, by month, or across all time.
+Freefin Finance parses your bank (Itau only so far) monthly PDF statements, stores the transactions in a local SQLite database, and gives you an interactive dashboard to explore your spending — by category, by month, or across all time.
 
 Everything runs on `localhost`. Your PDF files are never stored on disk; bytes are processed in memory and discarded after parsing. No account, no subscription, no data leaves your machine.
+
+It only works with credit card bills that are already closed.
+
+---
+
+## AI Learning Project Notice
+
+This repository is an AI-only coding experiment built to learn how to design, implement, and iterate software using AI tools and agents.
+
+All code was generated with AI assistance (no manual coding), and the result is a working, practical and useful application.
+
+No line of code in this project was written by hand.
 
 ---
 
