@@ -388,8 +388,9 @@
             <div>
               <h3>Mapa de categorias</h3>
               <div class="muted" style="margin-top: 4px; font-size: 0.9rem">
-                Crie regras de palavra-chave para categorizar compras automaticamente.
-                Novas importações sempre começam como <strong>Outros</strong>.
+                Crie regras de palavra-chave para categorizar compras
+                automaticamente. Novas importações sempre começam como
+                <strong>Outros</strong>.
               </div>
             </div>
           </div>
@@ -430,8 +431,9 @@
             </button>
           </div>
           <p class="footer-note">
-            A ordem das regras define a prioridade. Arraste para reordenar.
-            Se uma compra não encaixar em nenhuma regra, fica em <strong>Outros</strong>.
+            A ordem das regras define a prioridade. Arraste para reordenar. Se
+            uma compra não encaixar em nenhuma regra, fica em
+            <strong>Outros</strong>.
           </p>
         </section>
       </div>
@@ -814,9 +816,9 @@
       let selectedChartCategory = "";
       let tableSort = { col: "date", dir: "desc" };
       let tablePage = 1;
-      let tablePageSize = 20;
+      let tablePageSize = 10;
       let installmentPage = 1;
-      let installmentPageSize = 20;
+      let installmentPageSize = 10;
       let fixedCosts = [];
       let fixedIncome = [];
 
@@ -1019,34 +1021,46 @@
         });
 
         // Add rule form
-        document.getElementById("ruleAddBtn")?.addEventListener("click", async () => {
-          const keyEl = document.getElementById("ruleKeywordInput");
-          const catEl = document.getElementById("ruleCategoryInput");
-          const keyErr = document.getElementById("ruleKeywordError");
-          const catErr = document.getElementById("ruleCategoryError");
-          keyErr.textContent = "";
-          catErr.textContent = "";
-          const keyword = keyEl.value.trim().toLowerCase();
-          const category = catEl.value.trim();
-          let valid = true;
-          if (!keyword) { keyErr.textContent = "Informe uma palavra-chave."; valid = false; }
-          if (!category) { catErr.textContent = "Informe uma categoria."; valid = false; }
-          if (!valid) return;
-          _activeRules.unshift({ keyword, category });
-          await saveRulesArray();
-          reapplyCategories();
-          keyEl.value = "";
-          catEl.value = "";
-          renderRulesTable();
-        });
+        document
+          .getElementById("ruleAddBtn")
+          ?.addEventListener("click", async () => {
+            const keyEl = document.getElementById("ruleKeywordInput");
+            const catEl = document.getElementById("ruleCategoryInput");
+            const keyErr = document.getElementById("ruleKeywordError");
+            const catErr = document.getElementById("ruleCategoryError");
+            keyErr.textContent = "";
+            catErr.textContent = "";
+            const keyword = keyEl.value.trim().toLowerCase();
+            const category = catEl.value.trim();
+            let valid = true;
+            if (!keyword) {
+              keyErr.textContent = "Informe uma palavra-chave.";
+              valid = false;
+            }
+            if (!category) {
+              catErr.textContent = "Informe uma categoria.";
+              valid = false;
+            }
+            if (!valid) return;
+            _activeRules.unshift({ keyword, category });
+            await saveRulesArray();
+            reapplyCategories();
+            keyEl.value = "";
+            catEl.value = "";
+            renderRulesTable();
+          });
 
         // Populate category datalist on focus
-        document.getElementById("ruleCategoryInput")?.addEventListener("focus", () => {
-          const dl = document.getElementById("ruleCategoryDatalist");
-          if (!dl) return;
-          const opts = getAllCategoryOptions();
-          dl.innerHTML = opts.map((c) => `<option value="${escapeHtml(c)}"></option>`).join("");
-        });
+        document
+          .getElementById("ruleCategoryInput")
+          ?.addEventListener("focus", () => {
+            const dl = document.getElementById("ruleCategoryDatalist");
+            if (!dl) return;
+            const opts = getAllCategoryOptions();
+            dl.innerHTML = opts
+              .map((c) => `<option value="${escapeHtml(c)}"></option>`)
+              .join("");
+          });
 
         elements.modalCancelBtn.addEventListener("click", closeCategoryModal);
         elements.categoryModalBackdrop.addEventListener("click", (e) => {
@@ -1164,16 +1178,29 @@
           })
           .join("");
 
-        // Chip click: select it and auto-fill the new-category input.
+        // Ensure input starts enabled and empty.
+        elements.modalNewCategory.disabled = false;
+        elements.modalNewCategory.value = "";
+
+        // Chip click: toggle selection. Selecting a chip disables the free-text
+        // input; clicking the same chip again deselects it and re-enables it.
         elements.modalCategoryChips
           .querySelectorAll(".category-chip")
           .forEach((chip) => {
             chip.addEventListener("click", () => {
+              const wasSelected = chip.classList.contains("selected");
               elements.modalCategoryChips
                 .querySelectorAll(".category-chip")
                 .forEach((c) => c.classList.remove("selected"));
-              chip.classList.add("selected");
-              elements.modalNewCategory.value = chip.dataset.cat;
+              if (wasSelected) {
+                // Deselect → re-enable free-text input.
+                elements.modalNewCategory.disabled = false;
+              } else {
+                // Select → clear and disable free-text input.
+                chip.classList.add("selected");
+                elements.modalNewCategory.value = "";
+                elements.modalNewCategory.disabled = true;
+              }
             });
           });
 
@@ -1187,8 +1214,14 @@
             "";
           if (!keyword || !category) return;
 
-          // Prepend new rule (highest priority) and save.
-          _activeRules.unshift({ keyword: keyword.toLowerCase(), category });
+          // Upsert: update existing rule with same keyword, or prepend new one.
+          const kw = keyword.toLowerCase();
+          const existingIdx = _activeRules.findIndex((r) => r.keyword === kw);
+          if (existingIdx !== -1) {
+            _activeRules[existingIdx].category = category;
+          } else {
+            _activeRules.unshift({ keyword: kw, category });
+          }
           await saveRulesArray();
           renderRulesTable();
           reapplyCategories();
@@ -2345,7 +2378,7 @@
             <div class="pag-size">
               Por página:
               <select data-pag-size-ns="${ns}">
-                ${[20, 50, 100].map((n) => `<option value="${n}" ${n === pageSize ? "selected" : ""}>${n}</option>`).join("")}
+                ${[10, 20, 50, 100].map((n) => `<option value="${n}" ${n === pageSize ? "selected" : ""}>${n}</option>`).join("")}
               </select>
             </div>
           </div>`;
@@ -2582,9 +2615,7 @@
         container.querySelectorAll("[data-save-idx]").forEach((btn) => {
           btn.addEventListener("click", async () => {
             const idx = Number(btn.dataset.saveIdx);
-            const row = container.querySelector(
-              `[data-rule-idx="${idx}"]`,
-            );
+            const row = container.querySelector(`[data-rule-idx="${idx}"]`);
             const keyword = row
               .querySelector(".fixed-edit-name")
               .value.trim()
@@ -2624,7 +2655,11 @@
 
         // Drag-drop reorder
         const itemsContainer = document.getElementById("rulesItemsContainer");
-        if (itemsContainer && typeof Sortable !== "undefined" && editingIdx === -1) {
+        if (
+          itemsContainer &&
+          typeof Sortable !== "undefined" &&
+          editingIdx === -1
+        ) {
           Sortable.create(itemsContainer, {
             handle: ".drag-handle",
             animation: 150,
