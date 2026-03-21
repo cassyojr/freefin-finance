@@ -421,6 +421,219 @@ h1 {
   padding: 2.25rem; /* spacing-10 */
 }
 
+.card {
+  position: relative; /* anchor for .card-info */
+}
+
+/* ── Card info popover ──────────────────────────────────────────────────── */
+.card-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.card-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--brand);
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    box-shadow 0.18s;
+}
+
+.card-info-btn:hover,
+.card-info-btn:focus-visible,
+.card-info.pinned .card-info-btn {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.card-info-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand);
+}
+
+.card-info-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  width: min(280px, calc(100vw - 48px));
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface-container-lowest);
+  outline: 1px solid var(--outline-variant);
+  box-shadow: var(--shadow-float);
+  color: var(--text);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.97);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
+}
+
+.card-info:hover .card-info-tooltip,
+.card-info:focus-within .card-info-tooltip,
+.card-info.pinned .card-info-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0s;
+}
+
+/* ── Tooltip caret ─────────────────────────────────────────────────────── */
+.card-info-tooltip::before,
+.card-info-tooltip::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+}
+
+.card-info-tooltip::before {
+  top: -7px;
+  right: 14px;
+  border-bottom: 7px solid var(--outline-variant);
+}
+
+.card-info-tooltip::after {
+  top: -5px;
+  right: 14px;
+  border-left-width: 6px;
+  border-right-width: 6px;
+  border-bottom: 6px solid var(--surface-container-lowest);
+}
+
+/* ── Average card specific ─────────────────────────────────────────────── */
+.card--average {
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.05),
+    var(--shadow);
+}
+
+.average-title-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card--average .metric-label {
+  font-weight: 400;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+}
+
+.average-value-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.metric-value--average {
+  font-size: clamp(1.85rem, 2.6vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-top: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.average-period-suffix {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+@keyframes avgValueIn {
+  from {
+    opacity: 0.6;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.average-value-in {
+  animation: avgValueIn 0.2s ease forwards;
+}
+
+/* ── Trend indicator ───────────────────────────────────────────────────── */
+.average-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.average-trend--up {
+  color: var(--danger);
+}
+.average-trend--down {
+  color: var(--ok);
+}
+.average-trend--neutral {
+  color: var(--muted);
+}
+
+.average-trend-label {
+  color: var(--muted);
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+/* ── Skeleton loading (toggled by .card--loading on true async load) ───── */
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.card--loading .metric-value--average {
+  color: transparent !important;
+  background: var(--surface-container);
+  border-radius: 6px;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+  min-width: 9ch;
+  pointer-events: none;
+}
+
+.card--loading .average-period-suffix,
+.card--loading .average-trend {
+  visibility: hidden;
+}
+
 .metric-label {
   color: var(--muted);
   font-size: 0.95rem;
@@ -691,13 +904,26 @@ textarea {
   cursor: pointer;
   font: inherit;
   font-size: 0.8rem;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .toggle-group button.active {
   background: var(--surface-container-lowest);
   color: var(--primary);
-  font-weight: 600;
-  box-shadow: 0 2px 10px rgba(0, 28, 98, 0.08);
+  font-weight: 700;
+  transform: scale(1.04);
+  box-shadow:
+    0 2px 8px rgba(0, 28, 98, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.toggle-group button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
 }
 
 .footer-note {
@@ -1304,6 +1530,12 @@ input[list]::-webkit-calendar-picker-indicator {
 }
 
 @media (max-width: 600px) {
+  /* Expand info button touch target on mobile without changing visual size */
+  .card-info-btn {
+    width: 44px;
+    height: 44px;
+  }
+
   /* Tighten shell gutters on small screens */
   .shell {
     width: calc(100% - 2rem);
