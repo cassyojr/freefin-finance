@@ -195,6 +195,19 @@
                 </button>
               </div>
             </div>
+            <!-- hamburger (mobile only, ≤768px) -->
+            <button
+              class="hamburger-btn"
+              id="hamburgerBtn"
+              type="button"
+              aria-label="Abrir menu"
+              aria-expanded="false"
+              aria-controls="mobileMenu"
+            >
+              <span class="hamburger-line"></span>
+              <span class="hamburger-line"></span>
+              <span class="hamburger-line"></span>
+            </button>
           </div><!-- end .nav-row -->
         </div>
       </section>
@@ -920,12 +933,14 @@
       function updateThemeToggleUI() {
         const isDark =
           document.documentElement.getAttribute("data-theme") === "dark";
-        const checkLight = document.getElementById("checkLight");
-        const checkDark = document.getElementById("checkDark");
-        if (checkLight)
-          checkLight.style.visibility = isDark ? "hidden" : "visible";
-        if (checkDark)
-          checkDark.style.visibility = isDark ? "visible" : "hidden";
+        ["checkLight", "mobileCheckLight"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.style.visibility = isDark ? "hidden" : "visible";
+        });
+        ["checkDark", "mobileCheckDark"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.style.visibility = isDark ? "visible" : "hidden";
+        });
       }
 
       function bindEvents() {
@@ -951,6 +966,7 @@
           if (e.key === "Escape") {
             menu?.classList.remove("open");
             cogBtn?.setAttribute("aria-expanded", "false");
+            closeMobileMenu();
           }
         });
 
@@ -986,6 +1002,60 @@
             }
           });
         });
+
+        // ── Mobile hamburger menu ───────────────────────────────────────
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const mobileMenuBackdrop = document.getElementById("mobileMenuBackdrop");
+
+        function openMobileMenu() {
+          mobileMenu?.classList.add("open");
+          mobileMenuBackdrop?.classList.add("open");
+          hamburgerBtn?.setAttribute("aria-expanded", "true");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeMobileMenu() {
+          mobileMenu?.classList.remove("open");
+          mobileMenuBackdrop?.classList.remove("open");
+          hamburgerBtn?.setAttribute("aria-expanded", "false");
+          document.body.style.overflow = "";
+        }
+
+        hamburgerBtn?.addEventListener("click", () => {
+          mobileMenu?.classList.contains("open")
+            ? closeMobileMenu()
+            : openMobileMenu();
+        });
+
+        mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
+
+        mobileMenu?.querySelectorAll("[data-mobile-tab]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            switchTab(btn.dataset.mobileTab);
+            closeMobileMenu();
+            if (btn.dataset.mobileTab === "despesas-fixas") {
+              setTimeout(
+                () => document.getElementById("fixedNameInput")?.focus(),
+                50,
+              );
+            } else if (btn.dataset.mobileTab === "receitas-fixas") {
+              setTimeout(
+                () =>
+                  document.getElementById("fixedIncomeNameInput")?.focus(),
+                50,
+              );
+            }
+          });
+        });
+
+        mobileMenu?.querySelectorAll("[data-mobile-theme]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            setTheme(btn.dataset.mobileTheme);
+            closeMobileMenu();
+          });
+        });
+        // ───────────────────────────────────────────────────────────────
 
         elements.reloadProjectBtn.addEventListener("click", async () => {
           await tryAutoLoadProjectPdfs(true);
@@ -3630,5 +3700,55 @@
           : "Nenhuma cadastrada — veja a aba Receitas Fixas";
       }
     </script>
+
+    <!-- ── Mobile Hamburger Menu (≤768px) ─────────────────────────────── -->
+    <div class="mobile-menu-backdrop" id="mobileMenuBackdrop" aria-hidden="true"></div>
+    <div
+      class="mobile-menu"
+      id="mobileMenu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu de navegação"
+    >
+      <div class="mobile-menu-handle" aria-hidden="true"></div>
+
+      <p class="mobile-menu-label">Navegar</p>
+      <nav class="mobile-menu-nav">
+        <button class="mobile-menu-item" data-mobile-tab="dashboard" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="mobile-menu-item" data-mobile-tab="despesas-fixas" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Despesas Fixas</span>
+        </button>
+        <button class="mobile-menu-item" data-mobile-tab="receitas-fixas" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <span>Receitas Fixas</span>
+        </button>
+        <button class="mobile-menu-item" data-mobile-tab="arquivos" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Arquivos</span>
+        </button>
+        <button class="mobile-menu-item" data-mobile-tab="categorias" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><path d="m6 16 6-12 6 12"/><path d="M8 12h8"/></svg>
+          <span>Categorias</span>
+        </button>
+      </nav>
+
+      <p class="mobile-menu-label" style="margin-top: 8px">Tema</p>
+      <div class="mobile-menu-nav">
+        <button class="mobile-menu-item" data-mobile-theme="light" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <span>Claro</span>
+          <span class="settings-option-check" id="mobileCheckLight">✓</span>
+        </button>
+        <button class="mobile-menu-item" data-mobile-theme="dark" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <span>Escuro</span>
+          <span class="settings-option-check" id="mobileCheckDark">✓</span>
+        </button>
+      </div>
+    </div>
   </body>
 </html>

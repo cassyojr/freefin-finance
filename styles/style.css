@@ -1403,3 +1403,164 @@ input[list]::-webkit-calendar-picker-indicator {
     opacity: 1;
   }
 }
+
+/* ── Hamburger button ─────────────────────────────────────────────── */
+.hamburger-btn {
+  display: none; /* shown only on mobile via media query */
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px;
+  flex-shrink: 0;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+
+.hamburger-btn:hover {
+  background: var(--surface-container);
+  color: var(--primary);
+}
+
+.hamburger-line {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition:
+    transform 0.22s ease,
+    opacity 0.18s ease;
+  transform-origin: center;
+}
+
+/* Animate to × when open */
+.hamburger-btn[aria-expanded="true"] .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger-btn[aria-expanded="true"] .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburger-btn[aria-expanded="true"] .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile menu backdrop ─────────────────────────────────────────── */
+.mobile-menu-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  animation: fade-in 0.2s ease forwards;
+}
+
+.mobile-menu-backdrop.open {
+  display: block;
+}
+
+/* ── Mobile menu sheet ────────────────────────────────────────────── */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-container-lowest);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.18);
+  outline: 1px solid var(--outline-variant);
+  padding: 8px 16px max(24px, env(safe-area-inset-bottom));
+  z-index: 1001;
+}
+
+.mobile-menu.open {
+  display: block;
+  animation: sheet-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mobile-menu-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--outline-variant);
+  border-radius: 4px;
+  margin: 0 auto 16px;
+}
+
+.mobile-menu-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin: 0 0 4px 4px;
+}
+
+.mobile-menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.mobile-menu-item:hover,
+.mobile-menu-item:active {
+  background: var(--surface-container);
+  color: var(--primary);
+}
+
+/* ── 768px — switch to hamburger ──────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Show hamburger, hide the desktop tab pill and cog entirely */
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .tab-nav,
+  .settings-menu {
+    display: none !important;
+  }
+
+  /* Hero row: title left, hamburger right (no stacking needed) */
+  .hero-top {
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* nav-row just holds the single hamburger button */
+  .nav-row {
+    width: auto;
+    padding-bottom: 0;
+  }
+}
