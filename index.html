@@ -2055,6 +2055,13 @@
                   : clickedCategory;
               elements.categoryFilter.value = selectedChartCategory;
               applyFilters();
+              routeWrite({
+                month: elements.monthFilter.value,
+                year: elements.yearFilter.value,
+                category: elements.categoryFilter.value,
+                search: elements.searchFilter.value.trim(),
+                installments: elements.installmentOnlyFilter.checked,
+              });
             },
           },
         });
