@@ -1119,6 +1119,11 @@ textarea {
   border-color: #3178c6;
 }
 
+/* On desktop the actions wrapper is invisible to flex layout */
+.fixed-item-actions {
+  display: contents;
+}
+
 .fixed-item-edit-row {
   display: flex;
   align-items: center;
@@ -1238,7 +1243,7 @@ input[list]::-webkit-calendar-picker-indicator {
      so the cog's fixed 40px slot is always reserved before tab-nav gets anything */
   .tab-nav {
     display: flex;
-    flex: 1 1 0%;   /* grow to fill, but start from 0 — not content-width */
+    flex: 1 1 0%; /* grow to fill, but start from 0 — not content-width */
     min-width: 0;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -1334,6 +1339,41 @@ input[list]::-webkit-calendar-picker-indicator {
   .table-card,
   .rules-card {
     padding: 1.25rem;
+  }
+
+  /* Fixed-item list: actions wrap onto a second line */
+  .fixed-item {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    padding: 0.85rem 0.7rem;
+  }
+
+  /* Name fills remaining space on first line next to drag handle */
+  .fixed-item .fixed-item-name {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  /* Amount may shrink but stays on first line */
+  .fixed-item .fixed-item-amount {
+    min-width: 0;
+    font-size: 0.93rem;
+  }
+
+  /* Actions div takes full width → second line, buttons pushed right */
+  .fixed-item-actions {
+    flex: 0 0 100%;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .fixed-item-actions .fixed-edit-btn,
+  .fixed-item-actions .fixed-delete-btn {
+    flex: 1 1 auto;
+    max-width: 48%;
+    text-align: center;
+    font-size: 0.83rem;
   }
 }
 

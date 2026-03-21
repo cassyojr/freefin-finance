@@ -641,22 +641,45 @@
 
     <!-- Fixed item edit modal (shared by Despesas Fixas + Receitas Fixas) -->
     <div class="modal-backdrop hidden" id="fixedItemModalBackdrop">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="fixedItemModalTitle" style="width: min(400px, 100%);">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fixedItemModalTitle"
+        style="width: min(400px, 100%)"
+      >
         <p class="modal-title" id="fixedItemModalTitle">Editar item</p>
-        <div style="display: grid; gap: 12px;">
-          <label style="display: grid; gap: 4px; font-size: 0.9rem;">
+        <div style="display: grid; gap: 12px">
+          <label style="display: grid; gap: 4px; font-size: 0.9rem">
             Nome
-            <input type="text" id="fixedItemModalName" placeholder="Nome do item" />
+            <input
+              type="text"
+              id="fixedItemModalName"
+              placeholder="Nome do item"
+            />
           </label>
-          <label style="display: grid; gap: 4px; font-size: 0.9rem;">
+          <label style="display: grid; gap: 4px; font-size: 0.9rem">
             Valor (R$)
-            <input type="text" id="fixedItemModalAmount" inputmode="numeric" placeholder="0,00" />
+            <input
+              type="text"
+              id="fixedItemModalAmount"
+              inputmode="numeric"
+              placeholder="0,00"
+            />
           </label>
         </div>
         <div id="fixedItemModalError" class="fixed-input-error"></div>
         <div class="modal-actions">
-          <button class="button-ghost" type="button" id="fixedItemModalCancelBtn">Cancelar</button>
-          <button class="button" type="button" id="fixedItemModalSaveBtn">Salvar</button>
+          <button
+            class="button-ghost"
+            type="button"
+            id="fixedItemModalCancelBtn"
+          >
+            Cancelar
+          </button>
+          <button class="button" type="button" id="fixedItemModalSaveBtn">
+            Salvar
+          </button>
         </div>
       </div>
     </div>
@@ -1639,7 +1662,9 @@
         const save = async () => {
           const nameVal = nameInput.value.trim();
           const rawAmt = amountInput.value.trim();
-          const amount = parseFloat(rawAmt.replace(/\./g, "").replace(",", "."));
+          const amount = parseFloat(
+            rawAmt.replace(/\./g, "").replace(",", "."),
+          );
           if (!nameVal) {
             errorDiv.textContent = "Informe o nome do item.";
             nameInput.focus();
@@ -1664,11 +1689,19 @@
         cancelBtn.replaceWith(newCancel);
         newCancel.addEventListener("click", close);
 
-        backdrop.onclick = (e) => { if (e.target === backdrop) close(); };
+        backdrop.onclick = (e) => {
+          if (e.target === backdrop) close();
+        };
 
         const escHandler = (e) => {
-          if (e.key === "Escape") { close(); }
-          if (e.key === "Enter" && document.activeElement !== newSave && document.activeElement !== newCancel) {
+          if (e.key === "Escape") {
+            close();
+          }
+          if (
+            e.key === "Enter" &&
+            document.activeElement !== newSave &&
+            document.activeElement !== newCancel
+          ) {
             e.preventDefault();
             save();
           }
@@ -3591,8 +3624,10 @@
                 <span class="drag-handle" title="Arrastar para reordenar">≡</span>
                 <span class="fixed-item-name">${escapeHtml(item.name)}</span>
                 <span class="fixed-item-amount">${formatCurrency(item.amount)}</span>
-                <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
-                <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                <div class="fixed-item-actions">
+                  <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
+                  <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                </div>
               </div>`;
           })
           .join("");
@@ -3801,8 +3836,10 @@
                 <span class="drag-handle" title="Arrastar para reordenar">≡</span>
                 <span class="fixed-item-name">${escapeHtml(item.name)}</span>
                 <span class="fixed-item-amount fixed-item-amount--income">${formatCurrency(item.amount)}</span>
-                <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
-                <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                <div class="fixed-item-actions">
+                  <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
+                  <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                </div>
               </div>`;
           })
           .join("");
