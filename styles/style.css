@@ -1101,6 +1101,7 @@ textarea {
 }
 
 .fixed-item-edit-row input {
+  width: auto; /* override global width: 100% so flex sizing takes over */
   height: 44px;
 }
 
@@ -1110,7 +1111,7 @@ textarea {
 }
 
 .fixed-edit-amount {
-  min-width: 160px;
+  width: 160px;
   flex-shrink: 0;
 }
 
