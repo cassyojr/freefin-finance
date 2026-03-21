@@ -825,6 +825,20 @@ textarea {
   padding: 6px 12px;
 }
 
+/* Keep wide data tables usable on medium screens */
+#tableContainer,
+#creditsContainer,
+#rulesTableContainer {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#tableContainer table,
+#creditsContainer table,
+#rulesTableContainer table {
+  min-width: 760px;
+}
+
 /* ── Collapsible ───────────────────────────────────────────────────────── */
 .collapsible > summary {
   list-style: none;
@@ -1193,6 +1207,31 @@ input[list]::-webkit-calendar-picker-indicator {
 }
 
 /* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .hero-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tab-nav {
+    width: 100%;
+    align-self: stretch;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+  }
+
+  .tab-btn,
+  .settings-menu {
+    flex: 0 0 auto;
+  }
+
+  .tab-btn {
+    padding: 10px 16px;
+  }
+}
+
 @media (max-width: 920px) {
   .content-grid,
   .subgrid {
