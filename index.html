@@ -886,6 +886,11 @@
         renderFixedIncomeCard();
         renderFixedIncomeList();
         renderAverages();
+
+        // Restore full navigation state from URL after all data is hydrated.
+        const initialRoute = routeRead();
+        routeApply(initialRoute);
+        applyFilters();
       }
 
       function setTheme(theme) {
@@ -989,8 +994,26 @@
           elements.searchFilter,
           elements.installmentOnlyFilter,
         ].forEach((element) => {
-          element.addEventListener("input", applyFilters);
-          element.addEventListener("change", applyFilters);
+          element.addEventListener("input", () => {
+            applyFilters();
+            routeWrite({
+              month: elements.monthFilter.value,
+              year: elements.yearFilter.value,
+              category: elements.categoryFilter.value,
+              search: elements.searchFilter.value.trim(),
+              installments: elements.installmentOnlyFilter.checked,
+            });
+          });
+          element.addEventListener("change", () => {
+            applyFilters();
+            routeWrite({
+              month: elements.monthFilter.value,
+              year: elements.yearFilter.value,
+              category: elements.categoryFilter.value,
+              search: elements.searchFilter.value.trim(),
+              installments: elements.installmentOnlyFilter.checked,
+            });
+          });
         });
 
         document.querySelectorAll("[data-average-mode]").forEach((button) => {
@@ -1075,6 +1098,7 @@
           elements.tabCreditos.classList.remove("active");
           elements.tableContainer.classList.remove("hidden");
           elements.creditsContainer.classList.add("hidden");
+          routeWrite({ view: "lancamentos" });
         });
 
         elements.tabCreditos.addEventListener("click", () => {
@@ -1082,6 +1106,7 @@
           elements.tabLancamentos.classList.remove("active");
           elements.creditsContainer.classList.remove("hidden");
           elements.tableContainer.classList.add("hidden");
+          routeWrite({ view: "creditos" });
         });
 
         // Fixed costs tab
@@ -2720,7 +2745,91 @@
         switchTab("arquivos");
       }
 
-      function switchTab(name) {
+      // ── Router ────────────────────────────────────────────────────────────
+
+      const VALID_TABS = new Set([
+        "dashboard",
+        "despesas-fixas",
+        "receitas-fixas",
+        "arquivos",
+        "categorias",
+      ]);
+      const VALID_VIEWS = new Set(["lancamentos", "creditos"]);
+      let _routerLock = false; // prevents recursive URL updates
+
+      function routeRead() {
+        const hash = location.hash.replace(/^#/, "") || "dashboard";
+        const tab = VALID_TABS.has(hash) ? hash : "dashboard";
+        const params = new URLSearchParams(location.search);
+        return {
+          tab,
+          view: VALID_VIEWS.has(params.get("view")) ? params.get("view") : "lancamentos",
+          month: params.get("month") || "",
+          year: params.get("year") || "",
+          category: decodeURIComponent(params.get("category") || ""),
+          search: decodeURIComponent(params.get("search") || ""),
+          installments: params.get("installments") === "1",
+        };
+      }
+
+      function routeWrite(updates = {}) {
+        if (_routerLock) return;
+        const curr = routeRead();
+        const next = { ...curr, ...updates };
+        const params = new URLSearchParams();
+        if (next.view !== "lancamentos") params.set("view", next.view);
+        if (next.month) params.set("month", next.month);
+        if (next.year) params.set("year", next.year);
+        if (next.category) params.set("category", encodeURIComponent(next.category));
+        if (next.search) params.set("search", encodeURIComponent(next.search));
+        if (next.installments) params.set("installments", "1");
+        const qs = params.toString();
+        const newUrl = (next.tab !== "dashboard" ? "#" + next.tab : "#dashboard") + (qs ? "?" + qs : "");
+        const currentFull = location.hash + (location.search ? location.search : "");
+        if (newUrl !== currentFull) {
+          history.pushState(null, "", location.pathname + (qs ? "?" + qs : "") + "#" + next.tab);
+        }
+      }
+
+      function routeApply(route) {
+        _routerLock = true;
+        try {
+          // Tab
+          _switchTabDOM(route.tab);
+
+          // Subtab
+          if (route.view === "creditos") {
+            elements.tabCreditos.classList.add("active");
+            elements.tabLancamentos.classList.remove("active");
+            elements.creditsContainer.classList.remove("hidden");
+            elements.tableContainer.classList.add("hidden");
+          } else {
+            elements.tabLancamentos.classList.add("active");
+            elements.tabCreditos.classList.remove("active");
+            elements.tableContainer.classList.remove("hidden");
+            elements.creditsContainer.classList.add("hidden");
+          }
+
+          // Filters — only set values that exist as options to avoid stale selections
+          if (route.month && elements.monthFilter.querySelector(`option[value="${route.month}"]`)) {
+            elements.monthFilter.value = route.month;
+          }
+          if (route.year && elements.yearFilter.querySelector(`option[value="${route.year}"]`)) {
+            elements.yearFilter.value = route.year;
+          }
+          if (route.category && elements.categoryFilter.querySelector(`option[value="${decodeURIComponent(route.category)}"]`)) {
+            elements.categoryFilter.value = decodeURIComponent(route.category);
+          }
+          elements.searchFilter.value = route.search || "";
+          elements.installmentOnlyFilter.checked = route.installments;
+        } finally {
+          _routerLock = false;
+        }
+      }
+
+      // Internal DOM-only switcher used by routeApply and switchTab.
+      function _switchTabDOM(name) {
+        if (!VALID_TABS.has(name)) name = "dashboard";
         document
           .querySelectorAll(".tab-panel")
           .forEach((p) => p.classList.add("hidden"));
@@ -2732,8 +2841,21 @@
           .forEach((b) =>
             b.classList.toggle("active", b.dataset.tabNav === name),
           );
-        document.getElementById("tab-" + name).classList.remove("hidden");
+        document.getElementById("tab-" + name)?.classList.remove("hidden");
       }
+
+      function switchTab(name) {
+        if (!VALID_TABS.has(name)) name = "dashboard";
+        _switchTabDOM(name);
+        routeWrite({ tab: name });
+      }
+
+      window.addEventListener("popstate", () => {
+        if (_routerLock) return;
+        const route = routeRead();
+        routeApply(route);
+        applyFilters();
+      });
 
       function renderEmptyState() {
         elements.reconciliationList.innerHTML = `<div class="empty">Aguardando PDFs.</div>`;
