@@ -938,7 +938,7 @@
             `${fileSummaries.length} fatura(s) carregada(s).`,
             "ok",
           );
-          switchTab("dashboard");
+          _switchTabDOM("dashboard");
         } catch (err) {
           console.error("Backend load failed, falling back to local:", err);
           backendAvailable = false;
@@ -1766,7 +1766,7 @@
           `${fileSummaries.length} fatura(s) carregada(s).`,
           "ok",
         );
-        switchTab("dashboard");
+        _switchTabDOM("dashboard");
       }
 
       function upsertFileSummary(list, summary) {
