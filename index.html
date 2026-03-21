@@ -340,10 +340,8 @@
         </section>
 
         <section class="table-card" style="margin-top: 20px">
-          <details class="collapsible">
+          <details class="collapsible" id="sectionLancamentos" open>
             <summary>
-              <div>
-                <h2 style="display: inline">Lançamentos</h2>
                 <span class="muted" style="margin-left: 12px; font-size: 0.9rem"
                   >A tabela responde aos filtros e ao clique no gráfico.</span
                 >
@@ -366,10 +364,8 @@
         </section>
 
         <section class="card" style="margin-top: 20px">
-          <details class="collapsible">
+          <details class="collapsible" id="sectionParcelamentos" open>
             <summary>
-              <div>
-                <h2 style="display: inline">Parcelamentos</h2>
                 <span class="muted" style="margin-left: 12px; font-size: 0.9rem"
                   >Agrupados por série dentro das faturas carregadas.</span
                 >
@@ -865,6 +861,8 @@
 
       async function boot() {
         bindEvents();
+        bindCollapsiblePersistence();
+        restoreCollapsibleStates();
         updateThemeToggleUI();
         renderEmptyState();
         // Phase 1: prefer backend when available, fall back to local parsing
@@ -2766,8 +2764,8 @@
           view: VALID_VIEWS.has(params.get("view")) ? params.get("view") : "lancamentos",
           month: params.get("month") || "",
           year: params.get("year") || "",
-          category: decodeURIComponent(params.get("category") || ""),
-          search: decodeURIComponent(params.get("search") || ""),
+          category: params.get("category") || "",
+          search: params.get("search") || "",
           installments: params.get("installments") === "1",
         };
       }
@@ -2780,8 +2778,8 @@
         if (next.view !== "lancamentos") params.set("view", next.view);
         if (next.month) params.set("month", next.month);
         if (next.year) params.set("year", next.year);
-        if (next.category) params.set("category", encodeURIComponent(next.category));
-        if (next.search) params.set("search", encodeURIComponent(next.search));
+        if (next.category) params.set("category", next.category);
+        if (next.search) params.set("search", next.search);
         if (next.installments) params.set("installments", "1");
         const qs = params.toString();
         const newUrl = (next.tab !== "dashboard" ? "#" + next.tab : "#dashboard") + (qs ? "?" + qs : "");
@@ -2817,8 +2815,8 @@
           if (route.year && elements.yearFilter.querySelector(`option[value="${route.year}"]`)) {
             elements.yearFilter.value = route.year;
           }
-          if (route.category && elements.categoryFilter.querySelector(`option[value="${decodeURIComponent(route.category)}"]`)) {
-            elements.categoryFilter.value = decodeURIComponent(route.category);
+          if (route.category && elements.categoryFilter.querySelector(`option[value="${route.category}"]`)) {
+            elements.categoryFilter.value = route.category;
           }
           elements.searchFilter.value = route.search || "";
           elements.installmentOnlyFilter.checked = route.installments;
@@ -2856,6 +2854,45 @@
         routeApply(route);
         applyFilters();
       });
+
+      // ── Collapsible section state (localStorage) ────────────────────────────────
+
+      const SECTION_IDS = ["sectionLancamentos", "sectionParcelamentos"];
+      const SECTIONS_KEY = "freefin-sections-open";
+
+      function saveCollapsibleStates() {
+        const open = SECTION_IDS.filter((id) => {
+          const el = document.getElementById(id);
+          return el && el.open;
+        });
+        localStorage.setItem(SECTIONS_KEY, JSON.stringify(open));
+      }
+
+      function restoreCollapsibleStates() {
+        let saved;
+        try {
+          saved = JSON.parse(localStorage.getItem(SECTIONS_KEY));
+        } catch (_) {
+          saved = null;
+        }
+        // Default: both open on first visit
+        const openSet = new Set(saved ?? SECTION_IDS);
+        SECTION_IDS.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (openSet.has(id)) {
+            el.setAttribute("open", "");
+          } else {
+            el.removeAttribute("open");
+          }
+        });
+      }
+
+      function bindCollapsiblePersistence() {
+        SECTION_IDS.forEach((id) => {
+          document.getElementById(id)?.addEventListener("toggle", saveCollapsibleStates);
+        });
+      }
 
       function renderEmptyState() {
         elements.reconciliationList.innerHTML = `<div class="empty">Aguardando PDFs.</div>`;
