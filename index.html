@@ -342,6 +342,8 @@
         <section class="table-card" style="margin-top: 20px">
           <details class="collapsible" id="sectionLancamentos" open>
             <summary>
+              <div>
+                <h2 style="display: inline">Lançamentos</h2>
                 <span class="muted" style="margin-left: 12px; font-size: 0.9rem"
                   >A tabela responde aos filtros e ao clique no gráfico.</span
                 >
@@ -366,6 +368,8 @@
         <section class="card" style="margin-top: 20px">
           <details class="collapsible" id="sectionParcelamentos" open>
             <summary>
+              <div>
+                <h2 style="display: inline">Parcelamentos</h2>
                 <span class="muted" style="margin-left: 12px; font-size: 0.9rem"
                   >Agrupados por série dentro das faturas carregadas.</span
                 >
@@ -870,6 +874,10 @@
         renderEmptyState();
         // Phase 1: prefer backend when available, fall back to local parsing
         await checkBackend();
+        // Capture URL state after the first await: by now all synchronous
+        // top-level code (incl. VALID_TABS const) has been initialised, and
+        // no switchTab() call has had a chance to overwrite the hash yet.
+        const initialRoute = routeRead();
         if (backendAvailable) {
           await migrateLocalStorageRulesToBackend();
           await loadRulesEditor();
@@ -889,7 +897,6 @@
         renderAverages();
 
         // Restore full navigation state from URL after all data is hydrated.
-        const initialRoute = routeRead();
         routeApply(initialRoute);
         applyFilters();
       }
