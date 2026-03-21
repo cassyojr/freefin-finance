@@ -1238,18 +1238,40 @@ input[list]::-webkit-calendar-picker-indicator {
     grid-template-columns: 1fr;
   }
 
-  .hero-top,
+  /* section-head: stack but keep items at their natural size (not stretched),
+     so buttons don't fill the full row width */
   .section-head {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .checkbox-row {
     padding-top: 0;
   }
+
+  /* Two-column filter grid on medium screens */
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Summary cards: two-column on medium screens */
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Pagination: two rows max — counts+buttons on top, per-page select below */
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 600px) {
+  /* Tighten shell gutters on small screens */
+  .shell {
+    width: calc(100% - 2rem);
+  }
+
   .tab-nav {
     border-radius: 18px;
     align-self: stretch;
@@ -1258,9 +1280,27 @@ input[list]::-webkit-calendar-picker-indicator {
   }
 
   .tab-btn {
-    flex: 1 1 auto;
-    padding: 9px 14px;
-    font-size: 0.88rem;
+    flex: 0 0 auto;
+    padding: 9px 12px;
+    font-size: 0.85rem;
     text-align: center;
+  }
+
+  /* Single-column filters on small screens */
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  /* Single-column summary cards on small screens */
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Reduce card padding on very narrow screens */
+  .card,
+  .panel,
+  .table-card,
+  .rules-card {
+    padding: 1.25rem;
   }
 }
