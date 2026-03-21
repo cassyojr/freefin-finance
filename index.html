@@ -271,34 +271,13 @@
           </article>
         </section>
 
-        <section class="content-grid" style="margin-top: 20px">
-          <article class="table-card">
-            <div class="section-head">
-              <h2>Distribuição por categoria</h2>
-              <span class="chart-note"
-                >Clique em uma fatia para filtrar a tabela.</span
-              >
-            </div>
-            <div class="chart-wrap">
-              <canvas id="categoryChart"></canvas>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="section-head">
-              <h3>Resumo por período</h3>
-              <span class="muted">Baseado no mês/ano da fatura</span>
-            </div>
-            <div id="periodSummary"></div>
-          </article>
-        </section>
-
         <section class="panel" style="margin-top: 20px">
           <div class="section-head">
             <h2>Filtros</h2>
             <span class="muted" id="activeFilterSummary"
               >Sem filtros aplicados</span
             >
+            <button id="resetFiltersBtn" type="button" class="button-ghost" style="margin-left:auto" hidden>Limpar filtros</button>
           </div>
 
           <div class="filters">
@@ -339,8 +318,30 @@
           </div>
         </section>
 
+        <section class="content-grid" style="margin-top: 20px">
+          <article class="table-card">
+            <div class="section-head">
+              <h2>Distribuição por categoria</h2>
+              <span class="chart-note"
+                >Clique em uma fatia para filtrar a tabela.</span
+              >
+            </div>
+            <div class="chart-wrap">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="section-head">
+              <h3>Resumo por período</h3>
+              <span class="muted">Baseado no mês/ano da fatura</span>
+            </div>
+            <div id="periodSummary"></div>
+          </article>
+        </section>
+
         <section class="table-card" style="margin-top: 20px">
-          <details class="collapsible">
+          <details class="collapsible" id="sectionLancamentos" open>
             <summary>
               <div>
                 <h2 style="display: inline">Lançamentos</h2>
@@ -366,7 +367,7 @@
         </section>
 
         <section class="card" style="margin-top: 20px">
-          <details class="collapsible">
+          <details class="collapsible" id="sectionParcelamentos" open>
             <summary>
               <div>
                 <h2 style="display: inline">Parcelamentos</h2>
@@ -817,10 +818,15 @@
       let tableSort = { col: "date", dir: "desc" };
       let tablePage = 1;
       let tablePageSize = 10;
+      let creditsPage = 1;
+      let creditsPageSize = 10;
       let installmentPage = 1;
       let installmentPageSize = 10;
       let fixedCosts = [];
       let fixedIncome = [];
+
+      const SECTION_IDS = ["sectionLancamentos", "sectionParcelamentos"];
+      const SECTIONS_KEY = "freefin-sections-open";
 
       const elements = {
         fileInput: document.getElementById("fileInput"),
@@ -836,6 +842,7 @@
         tabLancamentos: document.getElementById("tabLancamentos"),
         tabCreditos: document.getElementById("tabCreditos"),
         activeFilterSummary: document.getElementById("activeFilterSummary"),
+        resetFiltersBtn: document.getElementById("resetFiltersBtn"),
         filteredTotal: document.getElementById("filteredTotal"),
         filteredCount: document.getElementById("filteredCount"),
         averageValue: document.getElementById("averageValue"),
@@ -865,10 +872,16 @@
 
       async function boot() {
         bindEvents();
+        bindCollapsiblePersistence();
+        restoreCollapsibleStates();
         updateThemeToggleUI();
         renderEmptyState();
         // Phase 1: prefer backend when available, fall back to local parsing
         await checkBackend();
+        // Capture URL state after the first await: by now all synchronous
+        // top-level code (incl. VALID_TABS const) has been initialised, and
+        // no switchTab() call has had a chance to overwrite the hash yet.
+        const initialRoute = routeRead();
         if (backendAvailable) {
           await migrateLocalStorageRulesToBackend();
           await loadRulesEditor();
@@ -886,6 +899,10 @@
         renderFixedIncomeCard();
         renderFixedIncomeList();
         renderAverages();
+
+        // Restore full navigation state from URL after all data is hydrated.
+        routeApply(initialRoute);
+        applyFilters();
       }
 
       function setTheme(theme) {
@@ -982,6 +999,17 @@
           event.target.value = "";
         });
 
+        elements.resetFiltersBtn.addEventListener("click", () => {
+          elements.monthFilter.value = "";
+          elements.yearFilter.value = "";
+          elements.categoryFilter.value = "";
+          elements.searchFilter.value = "";
+          elements.installmentOnlyFilter.checked = false;
+          selectedChartCategory = "";
+          applyFilters();
+          routeWrite({ month: "", year: "", category: "", search: "", installments: false });
+        });
+
         [
           elements.monthFilter,
           elements.yearFilter,
@@ -989,8 +1017,26 @@
           elements.searchFilter,
           elements.installmentOnlyFilter,
         ].forEach((element) => {
-          element.addEventListener("input", applyFilters);
-          element.addEventListener("change", applyFilters);
+          element.addEventListener("input", () => {
+            applyFilters();
+            routeWrite({
+              month: elements.monthFilter.value,
+              year: elements.yearFilter.value,
+              category: elements.categoryFilter.value,
+              search: elements.searchFilter.value.trim(),
+              installments: elements.installmentOnlyFilter.checked,
+            });
+          });
+          element.addEventListener("change", () => {
+            applyFilters();
+            routeWrite({
+              month: elements.monthFilter.value,
+              year: elements.yearFilter.value,
+              category: elements.categoryFilter.value,
+              search: elements.searchFilter.value.trim(),
+              installments: elements.installmentOnlyFilter.checked,
+            });
+          });
         });
 
         document.querySelectorAll("[data-average-mode]").forEach((button) => {
@@ -1075,6 +1121,7 @@
           elements.tabCreditos.classList.remove("active");
           elements.tableContainer.classList.remove("hidden");
           elements.creditsContainer.classList.add("hidden");
+          routeWrite({ view: "lancamentos" });
         });
 
         elements.tabCreditos.addEventListener("click", () => {
@@ -1082,6 +1129,7 @@
           elements.tabLancamentos.classList.remove("active");
           elements.creditsContainer.classList.remove("hidden");
           elements.tableContainer.classList.add("hidden");
+          routeWrite({ view: "creditos" });
         });
 
         // Fixed costs tab
@@ -1848,6 +1896,7 @@
         renderReconciliation();
         renderPeriodSummary();
         tablePage = 1;
+        creditsPage = 1;
         installmentPage = 1;
         renderTable();
         renderCreditsTable(creditTransactions);
@@ -2019,6 +2068,13 @@
                   : clickedCategory;
               elements.categoryFilter.value = selectedChartCategory;
               applyFilters();
+              routeWrite({
+                month: elements.monthFilter.value,
+                year: elements.yearFilter.value,
+                category: elements.categoryFilter.value,
+                search: elements.searchFilter.value.trim(),
+                installments: elements.installmentOnlyFilter.checked,
+              });
             },
           },
         });
@@ -2259,7 +2315,12 @@
         }
 
         const total = sumValues(credits);
-        const rows = credits
+        const totalPages = Math.ceil(credits.length / creditsPageSize);
+        creditsPage = Math.min(creditsPage, totalPages);
+        const start = (creditsPage - 1) * creditsPageSize;
+        const pageItems = credits.slice(start, start + creditsPageSize);
+
+        const rows = pageItems
           .map((item) => {
             return `
               <tr>
@@ -2289,7 +2350,15 @@
               <th>Valor</th>
             </tr></thead>
             <tbody>${rows}</tbody>
-          </table>`;
+          </table>
+          ${buildPagination(creditsPage, totalPages, credits.length, creditsPageSize, "credits")}`;
+
+        bindPaginationEvents(
+          elements.creditsContainer,
+          totalPages,
+          "credits",
+          () => renderCreditsTable(credits),
+        );
       }
 
       function renderInstallments() {
@@ -2390,6 +2459,7 @@
             const p = Number(btn.dataset.pag);
             if (p < 1 || p > totalPages || btn.disabled) return;
             if (ns === "table") tablePage = p;
+            else if (ns === "credits") creditsPage = p;
             else installmentPage = p;
             rerender();
           });
@@ -2402,6 +2472,9 @@
             if (ns === "table") {
               tablePageSize = Number(sizeSelect.value);
               tablePage = 1;
+            } else if (ns === "credits") {
+              creditsPageSize = Number(sizeSelect.value);
+              creditsPage = 1;
             } else {
               installmentPageSize = Number(sizeSelect.value);
               installmentPage = 1;
@@ -2476,6 +2549,7 @@
         elements.activeFilterSummary.textContent = parts.length
           ? parts.join(" • ")
           : "Sem filtros aplicados";
+        elements.resetFiltersBtn.hidden = parts.length === 0;
       }
 
       // ── Category rules table ─────────────────────────────────────────────────
@@ -2720,7 +2794,111 @@
         switchTab("arquivos");
       }
 
-      function switchTab(name) {
+      // ── Router ────────────────────────────────────────────────────────────
+
+      const VALID_TABS = new Set([
+        "dashboard",
+        "despesas-fixas",
+        "receitas-fixas",
+        "arquivos",
+        "categorias",
+      ]);
+      const VALID_VIEWS = new Set(["lancamentos", "creditos"]);
+      let _routerLock = false; // prevents recursive URL updates
+
+      function routeRead() {
+        const hash = location.hash.replace(/^#/, "") || "dashboard";
+        const tab = VALID_TABS.has(hash) ? hash : "dashboard";
+        const params = new URLSearchParams(location.search);
+        return {
+          tab,
+          view: VALID_VIEWS.has(params.get("view"))
+            ? params.get("view")
+            : "lancamentos",
+          month: params.get("month") || "",
+          year: params.get("year") || "",
+          category: params.get("category") || "",
+          search: params.get("search") || "",
+          installments: params.get("installments") === "1",
+        };
+      }
+
+      function routeWrite(updates = {}) {
+        if (_routerLock) return;
+        const curr = routeRead();
+        const next = { ...curr, ...updates };
+        const params = new URLSearchParams();
+        if (next.view !== "lancamentos") params.set("view", next.view);
+        if (next.month) params.set("month", next.month);
+        if (next.year) params.set("year", next.year);
+        if (next.category) params.set("category", next.category);
+        if (next.search) params.set("search", next.search);
+        if (next.installments) params.set("installments", "1");
+        const qs = params.toString();
+        const newUrl =
+          (next.tab !== "dashboard" ? "#" + next.tab : "#dashboard") +
+          (qs ? "?" + qs : "");
+        const currentFull =
+          location.hash + (location.search ? location.search : "");
+        if (newUrl !== currentFull) {
+          history.pushState(
+            null,
+            "",
+            location.pathname + (qs ? "?" + qs : "") + "#" + next.tab,
+          );
+        }
+      }
+
+      function routeApply(route) {
+        _routerLock = true;
+        try {
+          // Tab
+          _switchTabDOM(route.tab);
+
+          // Subtab
+          if (route.view === "creditos") {
+            elements.tabCreditos.classList.add("active");
+            elements.tabLancamentos.classList.remove("active");
+            elements.creditsContainer.classList.remove("hidden");
+            elements.tableContainer.classList.add("hidden");
+          } else {
+            elements.tabLancamentos.classList.add("active");
+            elements.tabCreditos.classList.remove("active");
+            elements.tableContainer.classList.remove("hidden");
+            elements.creditsContainer.classList.add("hidden");
+          }
+
+          // Filters — only set values that exist as options to avoid stale selections
+          if (
+            route.month &&
+            elements.monthFilter.querySelector(`option[value="${route.month}"]`)
+          ) {
+            elements.monthFilter.value = route.month;
+          }
+          if (
+            route.year &&
+            elements.yearFilter.querySelector(`option[value="${route.year}"]`)
+          ) {
+            elements.yearFilter.value = route.year;
+          }
+          if (
+            route.category &&
+            elements.categoryFilter.querySelector(
+              `option[value="${route.category}"]`,
+            )
+          ) {
+            elements.categoryFilter.value = route.category;
+          }
+          elements.searchFilter.value = route.search || "";
+          elements.installmentOnlyFilter.checked = route.installments;
+        } finally {
+          _routerLock = false;
+        }
+      }
+
+      // Internal DOM-only switcher used by routeApply and switchTab.
+      function _switchTabDOM(name) {
+        if (!VALID_TABS.has(name)) name = "dashboard";
         document
           .querySelectorAll(".tab-panel")
           .forEach((p) => p.classList.add("hidden"));
@@ -2732,7 +2910,58 @@
           .forEach((b) =>
             b.classList.toggle("active", b.dataset.tabNav === name),
           );
-        document.getElementById("tab-" + name).classList.remove("hidden");
+        document.getElementById("tab-" + name)?.classList.remove("hidden");
+      }
+
+      function switchTab(name) {
+        if (!VALID_TABS.has(name)) name = "dashboard";
+        _switchTabDOM(name);
+        routeWrite({ tab: name });
+      }
+
+      window.addEventListener("popstate", () => {
+        if (_routerLock) return;
+        const route = routeRead();
+        routeApply(route);
+        applyFilters();
+      });
+
+      // ── Collapsible section state (localStorage) ────────────────────────────────
+
+      function saveCollapsibleStates() {
+        const open = SECTION_IDS.filter((id) => {
+          const el = document.getElementById(id);
+          return el && el.open;
+        });
+        localStorage.setItem(SECTIONS_KEY, JSON.stringify(open));
+      }
+
+      function restoreCollapsibleStates() {
+        let saved;
+        try {
+          saved = JSON.parse(localStorage.getItem(SECTIONS_KEY));
+        } catch (_) {
+          saved = null;
+        }
+        // Default: both open on first visit
+        const openSet = new Set(saved ?? SECTION_IDS);
+        SECTION_IDS.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (openSet.has(id)) {
+            el.setAttribute("open", "");
+          } else {
+            el.removeAttribute("open");
+          }
+        });
+      }
+
+      function bindCollapsiblePersistence() {
+        SECTION_IDS.forEach((id) => {
+          document
+            .getElementById(id)
+            ?.addEventListener("toggle", saveCollapsibleStates);
+        });
       }
 
       function renderEmptyState() {
