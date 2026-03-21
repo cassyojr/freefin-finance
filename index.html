@@ -817,6 +817,8 @@
       let tableSort = { col: "date", dir: "desc" };
       let tablePage = 1;
       let tablePageSize = 10;
+      let creditsPage = 1;
+      let creditsPageSize = 10;
       let installmentPage = 1;
       let installmentPageSize = 10;
       let fixedCosts = [];
@@ -1881,6 +1883,7 @@
         renderReconciliation();
         renderPeriodSummary();
         tablePage = 1;
+        creditsPage = 1;
         installmentPage = 1;
         renderTable();
         renderCreditsTable(creditTransactions);
@@ -2292,7 +2295,12 @@
         }
 
         const total = sumValues(credits);
-        const rows = credits
+        const totalPages = Math.ceil(credits.length / creditsPageSize);
+        creditsPage = Math.min(creditsPage, totalPages);
+        const start = (creditsPage - 1) * creditsPageSize;
+        const pageItems = credits.slice(start, start + creditsPageSize);
+
+        const rows = pageItems
           .map((item) => {
             return `
               <tr>
@@ -2322,7 +2330,12 @@
               <th>Valor</th>
             </tr></thead>
             <tbody>${rows}</tbody>
-          </table>`;
+          </table>
+          ${buildPagination(creditsPage, totalPages, credits.length, creditsPageSize, "credits")}`;
+
+        bindPaginationEvents(elements.creditsContainer, totalPages, "credits", () =>
+          renderCreditsTable(credits),
+        );
       }
 
       function renderInstallments() {
@@ -2423,6 +2436,7 @@
             const p = Number(btn.dataset.pag);
             if (p < 1 || p > totalPages || btn.disabled) return;
             if (ns === "table") tablePage = p;
+            else if (ns === "credits") creditsPage = p;
             else installmentPage = p;
             rerender();
           });
@@ -2435,6 +2449,9 @@
             if (ns === "table") {
               tablePageSize = Number(sizeSelect.value);
               tablePage = 1;
+            } else if (ns === "credits") {
+              creditsPageSize = Number(sizeSelect.value);
+              creditsPage = 1;
             } else {
               installmentPageSize = Number(sizeSelect.value);
               installmentPage = 1;
