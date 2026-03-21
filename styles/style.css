@@ -1117,7 +1117,10 @@ textarea {
 
 /* Hide the native datalist dropdown arrow on all list inputs */
 input[list]::-webkit-calendar-picker-indicator {
-  display: none;
+  opacity: 0;
+  width: 0;
+  padding: 0;
+  pointer-events: none;
 }
 
 .fixed-save-btn {
