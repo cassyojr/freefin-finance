@@ -2575,17 +2575,16 @@
         const rows = _activeRules
           .map((rule, idx) => {
             if (idx === editingIdx) {
+              const dlId = `ruleCatEditList_${idx}`;
               const opts = categoryOptions
-                .map(
-                  (c) =>
-                    `<option value="${escapeHtml(c)}"${c === rule.category ? " selected" : ""}>${escapeHtml(c)}</option>`,
-                )
+                .map((c) => `<option value="${escapeHtml(c)}"></option>`)
                 .join("");
               return `
                 <div class="fixed-item" data-rule-idx="${idx}">
                   <div class="fixed-item-edit-row">
                     <input type="text" class="fixed-edit-name" value="${escapeHtml(rule.keyword)}" placeholder="Palavra-chave" />
-                    <select class="fixed-edit-amount">${opts}</select>
+                    <input type="text" class="fixed-edit-amount" list="${dlId}" value="${escapeHtml(rule.category)}" placeholder="Categoria" autocomplete="off" />
+                    <datalist id="${dlId}">${opts}</datalist>
                   </div>
                   <button class="fixed-save-btn" data-save-idx="${idx}" type="button">✓ Salvar</button>
                   <button class="fixed-cancel-btn" data-cancel-idx="${idx}" type="button">Cancelar</button>
