@@ -1294,13 +1294,13 @@ input[list]::-webkit-calendar-picker-indicator {
   .tab-nav {
     border-radius: 18px;
     align-self: stretch;
-    width: 100%;
     justify-content: flex-start;
+    /* Removed width: 100% to let flex constraints from earlier breakpoints handle it */
   }
 
   .tab-btn {
     flex: 0 0 auto;
-    padding: 9px 12px;
+    padding: 8px 12px;
     font-size: 0.85rem;
     text-align: center;
   }
@@ -1321,5 +1321,49 @@ input[list]::-webkit-calendar-picker-indicator {
   .table-card,
   .rules-card {
     padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Elevate UI/UX into a mobile "Bottom Sheet" for the dropdown */
+  .settings-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-width: 0;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 16px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    /* Massive box-shadow gives us an automatic dark backdrop */
+    box-shadow:
+      0 0 0 100vmax rgba(0, 0, 0, 0.4),
+      0 -8px 24px rgba(0, 0, 0, 0.15);
+    outline: none;
+    transform: translateY(100%);
+    animation: sheet-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    z-index: 1000;
+  }
+
+  /* Grab handle indicator */
+  .settings-dropdown::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--outline-variant);
+    border-radius: 4px;
+    margin: 0 auto 20px auto;
+  }
+}
+
+@keyframes sheet-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
   }
 }
