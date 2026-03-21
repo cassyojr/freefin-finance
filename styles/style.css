@@ -699,7 +699,12 @@ textarea {
   color: var(--muted);
 }
 
-/* ── Tab nav ───────────────────────────────────────────────────────────── */
+/* ── Nav row (tab-nav + settings cog in one flex row) ─────────────────── */
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 .tab-nav {
   display: inline-flex;
   flex-wrap: wrap;
@@ -1213,18 +1218,24 @@ input[list]::-webkit-calendar-picker-indicator {
     align-items: stretch;
   }
 
-  .tab-nav {
-    width: 100%;
-    align-self: stretch;
-    flex-wrap: nowrap;
+  /* nav-row scrolls horizontally; the cog stays visible outside the scroll area
+     because it is a flex sibling of tab-nav, not inside it */
+  .nav-row {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    justify-content: flex-start;
+    align-items: center;
   }
 
-  .tab-btn,
+  .tab-nav {
+    flex-shrink: 0; /* don't squash tabs — let the row scroll instead */
+  }
+
+  /* cog must never scroll away */
   .settings-menu {
-    flex: 0 0 auto;
+    flex-shrink: 0;
+    margin-left: auto;
+    position: sticky;
+    right: 0;
   }
 
   .tab-btn {
