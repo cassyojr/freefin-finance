@@ -818,6 +818,9 @@
       let fixedCosts = [];
       let fixedIncome = [];
 
+      const SECTION_IDS = ["sectionLancamentos", "sectionParcelamentos"];
+      const SECTIONS_KEY = "freefin-sections-open";
+
       const elements = {
         fileInput: document.getElementById("fileInput"),
         reloadProjectBtn: document.getElementById("reloadProjectBtn"),
@@ -2856,9 +2859,6 @@
       });
 
       // ── Collapsible section state (localStorage) ────────────────────────────────
-
-      const SECTION_IDS = ["sectionLancamentos", "sectionParcelamentos"];
-      const SECTIONS_KEY = "freefin-sections-open";
 
       function saveCollapsibleStates() {
         const open = SECTION_IDS.filter((id) => {
