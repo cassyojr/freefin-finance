@@ -1218,28 +1218,36 @@ input[list]::-webkit-calendar-picker-indicator {
     align-items: stretch;
   }
 
-  /* nav-row scrolls horizontally; the cog stays visible outside the scroll area
-     because it is a flex sibling of tab-nav, not inside it */
+  /* nav-row stops scrolling to allow dropdown to break out freely */
   .nav-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 4px;
+    padding-bottom: 2px;
+  }
+
+  /* tab-nav takes over the scrolling, isolated from the cog */
+  .tab-nav {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0; /* critical: allows it to constrain to row width */
+    flex-wrap: nowrap; /* prevent wrapping */
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    align-items: center;
-  }
-
-  .tab-nav {
-    flex-shrink: 0; /* don't squash tabs — let the row scroll instead */
-  }
-
-  /* cog must never scroll away */
-  .settings-menu {
-    flex-shrink: 0;
-    margin-left: auto;
-    position: sticky;
-    right: 0;
   }
 
   .tab-btn {
+    flex-shrink: 0;
     padding: 10px 16px;
+  }
+
+  /* cog stays fixed in layout, anchoring dropdown correctly */
+  .settings-menu {
+    flex-shrink: 0;
+    position: relative;
+    margin-left: auto;
+    z-index: 100;
   }
 }
 
