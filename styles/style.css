@@ -88,8 +88,15 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
   font-family:
     "Inter",
     system-ui,
@@ -1254,7 +1261,7 @@ input[list]::-webkit-calendar-picker-indicator {
 @media (max-width: 920px) {
   .content-grid,
   .subgrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   /* section-head: stack but keep items at their natural size (not stretched),
@@ -1307,12 +1314,12 @@ input[list]::-webkit-calendar-picker-indicator {
 
   /* Single-column filters on small screens */
   .filters {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   /* Single-column summary cards on small screens */
   .summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   /* Reduce card padding on very narrow screens */
@@ -1325,6 +1332,22 @@ input[list]::-webkit-calendar-picker-indicator {
 }
 
 @media (max-width: 480px) {
+  /* Dedicated stable backdrop for the bottom sheet */
+  .settings-menu.open::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    /* Optional: fade in */
+    animation: fade-in 0.2s ease forwards;
+  }
+
   /* Elevate UI/UX into a mobile "Bottom Sheet" for the dropdown */
   .settings-dropdown {
     position: fixed;
@@ -1337,10 +1360,8 @@ input[list]::-webkit-calendar-picker-indicator {
     border-radius: 20px 20px 0 0;
     padding: 24px 16px;
     padding-bottom: max(24px, env(safe-area-inset-bottom));
-    /* Massive box-shadow gives us an automatic dark backdrop */
-    box-shadow:
-      0 0 0 100vmax rgba(0, 0, 0, 0.4),
-      0 -8px 24px rgba(0, 0, 0, 0.15);
+    /* Small shadow to blend the edge, true background is handled by ::after above */
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
     outline: none;
     transform: translateY(100%);
     animation: sheet-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -1365,5 +1386,14 @@ input[list]::-webkit-calendar-picker-indicator {
   }
   to {
     transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

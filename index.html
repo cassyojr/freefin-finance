@@ -940,7 +940,8 @@
         });
 
         document.addEventListener("click", (e) => {
-          if (!menu?.contains(e.target)) {
+          // Close if clicking outside, or if clicking EXACTLY on the menu (which catches the ::after backdrop)
+          if (!menu?.contains(e.target) || e.target === menu) {
             menu?.classList.remove("open");
             cogBtn?.setAttribute("aria-expanded", "false");
           }
