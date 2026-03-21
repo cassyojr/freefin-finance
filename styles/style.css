@@ -1101,22 +1101,7 @@ textarea {
 }
 
 .fixed-item-edit-row input {
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: none;
-  font: inherit;
-  font-size: 0.95rem;
-  background: var(--surface-container);
-  color: var(--text);
-}
-
-.fixed-item-edit-row input:first-child {
   flex: 1;
-}
-
-.fixed-item-edit-row input:last-of-type {
-  width: 130px;
-  text-align: right;
 }
 
 .fixed-save-btn {
