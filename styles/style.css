@@ -1101,7 +1101,17 @@ textarea {
 }
 
 .fixed-item-edit-row input {
+  height: 44px;
+}
+
+.fixed-edit-name {
   flex: 1;
+  min-width: 160px;
+}
+
+.fixed-edit-amount {
+  min-width: 160px;
+  flex-shrink: 0;
 }
 
 .fixed-save-btn {
