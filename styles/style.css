@@ -1234,26 +1234,32 @@ input[list]::-webkit-calendar-picker-indicator {
     padding-bottom: 2px;
   }
 
-  /* tab-nav takes over the scrolling, isolated from the cog */
+  /* tab-nav scrolls internally; flex-basis:0% means it grows from ZERO
+     so the cog's fixed 40px slot is always reserved before tab-nav gets anything */
   .tab-nav {
     display: flex;
-    flex: 1 1 auto;
-    min-width: 0; /* critical: allows it to constrain to row width */
-    flex-wrap: nowrap; /* prevent wrapping */
+    flex: 1 1 0%;   /* grow to fill, but start from 0 — not content-width */
+    min-width: 0;
+    flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* hide scrollbar on Firefox */
+  }
+
+  .tab-nav::-webkit-scrollbar {
+    display: none; /* hide scrollbar on Chrome/Safari */
   }
 
   .tab-btn {
     flex-shrink: 0;
-    padding: 10px 16px;
+    padding: 10px 14px;
   }
 
-  /* cog stays fixed in layout, anchoring dropdown correctly */
+  /* cog: explicit fixed slot so flex algorithm always reserves exactly 40px */
   .settings-menu {
-    flex-shrink: 0;
+    flex: 0 0 40px;
+    width: 40px;
     position: relative;
-    margin-left: auto;
     z-index: 100;
   }
 }
@@ -1300,9 +1306,9 @@ input[list]::-webkit-calendar-picker-indicator {
 
   .tab-nav {
     border-radius: 18px;
-    align-self: flex-start;
+    align-self: center;
     justify-content: flex-start;
-    flex: 1 1 auto; /* Make sure it can shrink */
+    /* flex-basis inherits 0% from 1080px rule — do not override */
   }
 
   .tab-btn {
