@@ -299,6 +299,7 @@
             <span class="muted" id="activeFilterSummary"
               >Sem filtros aplicados</span
             >
+            <button id="resetFiltersBtn" type="button" class="button-ghost" style="margin-left:auto" hidden>Limpar filtros</button>
           </div>
 
           <div class="filters">
@@ -841,6 +842,7 @@
         tabLancamentos: document.getElementById("tabLancamentos"),
         tabCreditos: document.getElementById("tabCreditos"),
         activeFilterSummary: document.getElementById("activeFilterSummary"),
+        resetFiltersBtn: document.getElementById("resetFiltersBtn"),
         filteredTotal: document.getElementById("filteredTotal"),
         filteredCount: document.getElementById("filteredCount"),
         averageValue: document.getElementById("averageValue"),
@@ -995,6 +997,17 @@
           if (!files.length) return;
           await loadManualFiles(files);
           event.target.value = "";
+        });
+
+        elements.resetFiltersBtn.addEventListener("click", () => {
+          elements.monthFilter.value = "";
+          elements.yearFilter.value = "";
+          elements.categoryFilter.value = "";
+          elements.searchFilter.value = "";
+          elements.installmentOnlyFilter.checked = false;
+          selectedChartCategory = "";
+          applyFilters();
+          routeWrite({ month: "", year: "", category: "", search: "", installments: false });
         });
 
         [
@@ -2340,8 +2353,11 @@
           </table>
           ${buildPagination(creditsPage, totalPages, credits.length, creditsPageSize, "credits")}`;
 
-        bindPaginationEvents(elements.creditsContainer, totalPages, "credits", () =>
-          renderCreditsTable(credits),
+        bindPaginationEvents(
+          elements.creditsContainer,
+          totalPages,
+          "credits",
+          () => renderCreditsTable(credits),
         );
       }
 
@@ -2533,6 +2549,7 @@
         elements.activeFilterSummary.textContent = parts.length
           ? parts.join(" • ")
           : "Sem filtros aplicados";
+        elements.resetFiltersBtn.hidden = parts.length === 0;
       }
 
       // ── Category rules table ─────────────────────────────────────────────────
@@ -2795,7 +2812,9 @@
         const params = new URLSearchParams(location.search);
         return {
           tab,
-          view: VALID_VIEWS.has(params.get("view")) ? params.get("view") : "lancamentos",
+          view: VALID_VIEWS.has(params.get("view"))
+            ? params.get("view")
+            : "lancamentos",
           month: params.get("month") || "",
           year: params.get("year") || "",
           category: params.get("category") || "",
@@ -2816,10 +2835,17 @@
         if (next.search) params.set("search", next.search);
         if (next.installments) params.set("installments", "1");
         const qs = params.toString();
-        const newUrl = (next.tab !== "dashboard" ? "#" + next.tab : "#dashboard") + (qs ? "?" + qs : "");
-        const currentFull = location.hash + (location.search ? location.search : "");
+        const newUrl =
+          (next.tab !== "dashboard" ? "#" + next.tab : "#dashboard") +
+          (qs ? "?" + qs : "");
+        const currentFull =
+          location.hash + (location.search ? location.search : "");
         if (newUrl !== currentFull) {
-          history.pushState(null, "", location.pathname + (qs ? "?" + qs : "") + "#" + next.tab);
+          history.pushState(
+            null,
+            "",
+            location.pathname + (qs ? "?" + qs : "") + "#" + next.tab,
+          );
         }
       }
 
@@ -2843,13 +2869,24 @@
           }
 
           // Filters — only set values that exist as options to avoid stale selections
-          if (route.month && elements.monthFilter.querySelector(`option[value="${route.month}"]`)) {
+          if (
+            route.month &&
+            elements.monthFilter.querySelector(`option[value="${route.month}"]`)
+          ) {
             elements.monthFilter.value = route.month;
           }
-          if (route.year && elements.yearFilter.querySelector(`option[value="${route.year}"]`)) {
+          if (
+            route.year &&
+            elements.yearFilter.querySelector(`option[value="${route.year}"]`)
+          ) {
             elements.yearFilter.value = route.year;
           }
-          if (route.category && elements.categoryFilter.querySelector(`option[value="${route.category}"]`)) {
+          if (
+            route.category &&
+            elements.categoryFilter.querySelector(
+              `option[value="${route.category}"]`,
+            )
+          ) {
             elements.categoryFilter.value = route.category;
           }
           elements.searchFilter.value = route.search || "";
@@ -2921,7 +2958,9 @@
 
       function bindCollapsiblePersistence() {
         SECTION_IDS.forEach((id) => {
-          document.getElementById(id)?.addEventListener("toggle", saveCollapsibleStates);
+          document
+            .getElementById(id)
+            ?.addEventListener("toggle", saveCollapsibleStates);
         });
       }
 
