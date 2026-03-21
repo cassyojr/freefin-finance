@@ -41,16 +41,18 @@
             <h1>Dashboard de Gastos</h1>
           </div>
 
-          <nav class="tab-nav">
-            <button class="tab-btn active" data-tab="dashboard" type="button">
-              Dashboard
-            </button>
-            <button class="tab-btn" data-tab="despesas-fixas" type="button">
-              Despesas Fixas
-            </button>
-            <button class="tab-btn" data-tab="receitas-fixas" type="button">
-              Receitas Fixas
-            </button>
+          <div class="nav-row">
+            <nav class="tab-nav">
+              <button class="tab-btn active" data-tab="dashboard" type="button">
+                Dashboard
+              </button>
+              <button class="tab-btn" data-tab="despesas-fixas" type="button">
+                Despesas Fixas
+              </button>
+              <button class="tab-btn" data-tab="receitas-fixas" type="button">
+                Receitas Fixas
+              </button>
+            </nav>
             <div class="settings-menu" id="settingsMenu">
               <button
                 class="settings-cog"
@@ -193,7 +195,21 @@
                 </button>
               </div>
             </div>
-          </nav>
+            <!-- hamburger (mobile only, ≤768px) -->
+            <button
+              class="hamburger-btn"
+              id="hamburgerBtn"
+              type="button"
+              aria-label="Abrir menu"
+              aria-expanded="false"
+              aria-controls="mobileMenu"
+            >
+              <span class="hamburger-line"></span>
+              <span class="hamburger-line"></span>
+              <span class="hamburger-line"></span>
+            </button>
+          </div>
+          <!-- end .nav-row -->
         </div>
       </section>
 
@@ -277,7 +293,15 @@
             <span class="muted" id="activeFilterSummary"
               >Sem filtros aplicados</span
             >
-            <button id="resetFiltersBtn" type="button" class="button-ghost" style="margin-left:auto" hidden>Limpar filtros</button>
+            <button
+              id="resetFiltersBtn"
+              type="button"
+              class="button-ghost"
+              style="margin-left: auto"
+              hidden
+            >
+              Limpar filtros
+            </button>
           </div>
 
           <div class="filters">
@@ -615,6 +639,51 @@
       </div>
     </div>
 
+    <!-- Fixed item edit modal (shared by Despesas Fixas + Receitas Fixas) -->
+    <div class="modal-backdrop hidden" id="fixedItemModalBackdrop">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fixedItemModalTitle"
+        style="width: min(400px, 100%)"
+      >
+        <p class="modal-title" id="fixedItemModalTitle">Editar item</p>
+        <div style="display: grid; gap: 12px">
+          <label style="display: grid; gap: 4px; font-size: 0.9rem">
+            Nome
+            <input
+              type="text"
+              id="fixedItemModalName"
+              placeholder="Nome do item"
+            />
+          </label>
+          <label style="display: grid; gap: 4px; font-size: 0.9rem">
+            Valor (R$)
+            <input
+              type="text"
+              id="fixedItemModalAmount"
+              inputmode="numeric"
+              placeholder="0,00"
+            />
+          </label>
+        </div>
+        <div id="fixedItemModalError" class="fixed-input-error"></div>
+        <div class="modal-actions">
+          <button
+            class="button-ghost"
+            type="button"
+            id="fixedItemModalCancelBtn"
+          >
+            Cancelar
+          </button>
+          <button class="button" type="button" id="fixedItemModalSaveBtn">
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Category assignment modal -->
     <div class="modal-backdrop hidden" id="categoryModalBackdrop">
       <div
@@ -656,6 +725,181 @@
           </button>
           <button class="button" type="button" id="modalSaveBtn">Salvar</button>
         </div>
+      </div>
+    </div>
+
+    <!-- ── Mobile Hamburger Menu (≤768px) ─────────────────────────────── -->
+    <div
+      class="mobile-menu-backdrop"
+      id="mobileMenuBackdrop"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="mobile-menu"
+      id="mobileMenu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu de navegação"
+    >
+      <div class="mobile-menu-handle" aria-hidden="true"></div>
+
+      <p class="mobile-menu-label">Navegar</p>
+      <nav class="mobile-menu-nav">
+        <button
+          class="mobile-menu-item"
+          data-mobile-tab="dashboard"
+          type="button"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+          </svg>
+          <span>Dashboard</span>
+        </button>
+        <button
+          class="mobile-menu-item"
+          data-mobile-tab="despesas-fixas"
+          type="button"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <span>Despesas Fixas</span>
+        </button>
+        <button
+          class="mobile-menu-item"
+          data-mobile-tab="receitas-fixas"
+          type="button"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+          </svg>
+          <span>Receitas Fixas</span>
+        </button>
+        <button
+          class="mobile-menu-item"
+          data-mobile-tab="arquivos"
+          type="button"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          <span>Arquivos</span>
+        </button>
+        <button
+          class="mobile-menu-item"
+          data-mobile-tab="categorias"
+          type="button"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 20h16" />
+            <path d="m6 16 6-12 6 12" />
+            <path d="M8 12h8" />
+          </svg>
+          <span>Categorias</span>
+        </button>
+      </nav>
+
+      <p class="mobile-menu-label" style="margin-top: 8px">Tema</p>
+      <div class="mobile-menu-nav">
+        <button
+          class="mobile-menu-item"
+          data-mobile-theme="light"
+          type="button"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+            />
+          </svg>
+          <span>Claro</span>
+          <span class="settings-option-check" id="mobileCheckLight">✓</span>
+        </button>
+        <button class="mobile-menu-item" data-mobile-theme="dark" type="button">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+          <span>Escuro</span>
+          <span class="settings-option-check" id="mobileCheckDark">✓</span>
+        </button>
       </div>
     </div>
 
@@ -717,7 +961,7 @@
             `${fileSummaries.length} fatura(s) carregada(s).`,
             "ok",
           );
-          switchTab("dashboard");
+          _switchTabDOM("dashboard");
         } catch (err) {
           console.error("Backend load failed, falling back to local:", err);
           backendAvailable = false;
@@ -918,12 +1162,14 @@
       function updateThemeToggleUI() {
         const isDark =
           document.documentElement.getAttribute("data-theme") === "dark";
-        const checkLight = document.getElementById("checkLight");
-        const checkDark = document.getElementById("checkDark");
-        if (checkLight)
-          checkLight.style.visibility = isDark ? "hidden" : "visible";
-        if (checkDark)
-          checkDark.style.visibility = isDark ? "visible" : "hidden";
+        ["checkLight", "mobileCheckLight"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.style.visibility = isDark ? "hidden" : "visible";
+        });
+        ["checkDark", "mobileCheckDark"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.style.visibility = isDark ? "visible" : "hidden";
+        });
       }
 
       function bindEvents() {
@@ -938,7 +1184,8 @@
         });
 
         document.addEventListener("click", (e) => {
-          if (!menu?.contains(e.target)) {
+          // Close if clicking outside, or if clicking EXACTLY on the menu (which catches the ::after backdrop)
+          if (!menu?.contains(e.target) || e.target === menu) {
             menu?.classList.remove("open");
             cogBtn?.setAttribute("aria-expanded", "false");
           }
@@ -948,6 +1195,7 @@
           if (e.key === "Escape") {
             menu?.classList.remove("open");
             cogBtn?.setAttribute("aria-expanded", "false");
+            closeMobileMenu();
           }
         });
 
@@ -984,6 +1232,60 @@
           });
         });
 
+        // ── Mobile hamburger menu ───────────────────────────────────────
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const mobileMenuBackdrop =
+          document.getElementById("mobileMenuBackdrop");
+
+        function openMobileMenu() {
+          mobileMenu?.classList.add("open");
+          mobileMenuBackdrop?.classList.add("open");
+          hamburgerBtn?.setAttribute("aria-expanded", "true");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeMobileMenu() {
+          mobileMenu?.classList.remove("open");
+          mobileMenuBackdrop?.classList.remove("open");
+          hamburgerBtn?.setAttribute("aria-expanded", "false");
+          document.body.style.overflow = "";
+        }
+
+        hamburgerBtn?.addEventListener("click", () => {
+          mobileMenu?.classList.contains("open")
+            ? closeMobileMenu()
+            : openMobileMenu();
+        });
+
+        mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
+
+        mobileMenu?.querySelectorAll("[data-mobile-tab]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            switchTab(btn.dataset.mobileTab);
+            closeMobileMenu();
+            if (btn.dataset.mobileTab === "despesas-fixas") {
+              setTimeout(
+                () => document.getElementById("fixedNameInput")?.focus(),
+                50,
+              );
+            } else if (btn.dataset.mobileTab === "receitas-fixas") {
+              setTimeout(
+                () => document.getElementById("fixedIncomeNameInput")?.focus(),
+                50,
+              );
+            }
+          });
+        });
+
+        mobileMenu?.querySelectorAll("[data-mobile-theme]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            setTheme(btn.dataset.mobileTheme);
+            closeMobileMenu();
+          });
+        });
+        // ───────────────────────────────────────────────────────────────
+
         elements.reloadProjectBtn.addEventListener("click", async () => {
           await tryAutoLoadProjectPdfs(true);
         });
@@ -1007,7 +1309,13 @@
           elements.installmentOnlyFilter.checked = false;
           selectedChartCategory = "";
           applyFilters();
-          routeWrite({ month: "", year: "", category: "", search: "", installments: false });
+          routeWrite({
+            month: "",
+            year: "",
+            category: "",
+            search: "",
+            installments: false,
+          });
         });
 
         [
@@ -1325,6 +1633,82 @@
         document.addEventListener("keydown", escHandler);
       }
 
+      function openFixedItemModal({ title, item, onSave }) {
+        const backdrop = document.getElementById("fixedItemModalBackdrop");
+        document.getElementById("fixedItemModalTitle").textContent = title;
+
+        const nameInput = document.getElementById("fixedItemModalName");
+        const amountInput = document.getElementById("fixedItemModalAmount");
+        const errorDiv = document.getElementById("fixedItemModalError");
+        const saveBtn = document.getElementById("fixedItemModalSaveBtn");
+        const cancelBtn = document.getElementById("fixedItemModalCancelBtn");
+
+        nameInput.value = item.name;
+        amountInput.value = item.amount.toFixed(2).replace(".", ",");
+        errorDiv.textContent = "";
+        backdrop.classList.remove("hidden");
+        nameInput.focus();
+        nameInput.select();
+
+        // BRL mask on amount input
+        amountInput.addEventListener("input", applyBrlMask);
+
+        const close = () => {
+          backdrop.classList.add("hidden");
+          amountInput.removeEventListener("input", applyBrlMask);
+          document.removeEventListener("keydown", escHandler);
+        };
+
+        const save = async () => {
+          const nameVal = nameInput.value.trim();
+          const rawAmt = amountInput.value.trim();
+          const amount = parseFloat(
+            rawAmt.replace(/\./g, "").replace(",", "."),
+          );
+          if (!nameVal) {
+            errorDiv.textContent = "Informe o nome do item.";
+            nameInput.focus();
+            return;
+          }
+          if (isNaN(amount) || amount <= 0) {
+            errorDiv.textContent = "Informe um valor válido maior que zero.";
+            amountInput.focus();
+            return;
+          }
+          errorDiv.textContent = "";
+          close();
+          await onSave(nameVal, amount);
+        };
+
+        // Clone buttons to remove stale listeners
+        const newSave = saveBtn.cloneNode(true);
+        saveBtn.replaceWith(newSave);
+        newSave.addEventListener("click", save);
+
+        const newCancel = cancelBtn.cloneNode(true);
+        cancelBtn.replaceWith(newCancel);
+        newCancel.addEventListener("click", close);
+
+        backdrop.onclick = (e) => {
+          if (e.target === backdrop) close();
+        };
+
+        const escHandler = (e) => {
+          if (e.key === "Escape") {
+            close();
+          }
+          if (
+            e.key === "Enter" &&
+            document.activeElement !== newSave &&
+            document.activeElement !== newCancel
+          ) {
+            e.preventDefault();
+            save();
+          }
+        };
+        document.addEventListener("keydown", escHandler);
+      }
+
       async function tryAutoLoadProjectPdfs(forceReload = false) {
         if (forceReload) {
           allTransactions = [];
@@ -1415,7 +1799,7 @@
           `${fileSummaries.length} fatura(s) carregada(s).`,
           "ok",
         );
-        switchTab("dashboard");
+        _switchTabDOM("dashboard");
       }
 
       function upsertFileSummary(list, summary) {
@@ -3235,24 +3619,15 @@
         const total = getFixedCostsTotal();
         const items = fixedCosts
           .map((item, idx) => {
-            if (idx === editingIdx) {
-              return `
-                <div class="fixed-item">
-                  <div class="fixed-item-edit-row">
-                    <input type="text" class="fixed-edit-name" value="${escapeHtml(item.name)}" placeholder="Nome" />
-                    <input type="text" class="fixed-edit-amount" value="${item.amount.toFixed(2).replace(".", ",")}" inputmode="numeric" placeholder="0,00" />
-                  </div>
-                  <button class="fixed-save-btn" data-save-idx="${idx}" type="button">✓ Salvar</button>
-                  <button class="fixed-cancel-btn" data-cancel-idx="${idx}" type="button">Cancelar</button>
-                </div>`;
-            }
             return `
               <div class="fixed-item">
                 <span class="drag-handle" title="Arrastar para reordenar">≡</span>
                 <span class="fixed-item-name">${escapeHtml(item.name)}</span>
                 <span class="fixed-item-amount">${formatCurrency(item.amount)}</span>
-                <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
-                <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                <div class="fixed-item-actions">
+                  <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
+                  <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                </div>
               </div>`;
           })
           .join("");
@@ -3267,10 +3642,21 @@
             <span>${formatCurrency(total)}</span>
           </div>`;
 
-        // Edit button: re-render with that row in edit mode
+        // Edit button: open modal
         list.querySelectorAll("[data-edit-idx]").forEach((btn) => {
           btn.addEventListener("click", () => {
-            renderFixedCostsList(Number(btn.dataset.editIdx));
+            const idx = Number(btn.dataset.editIdx);
+            openFixedItemModal({
+              title: "Editar despesa fixa",
+              item: fixedCosts[idx],
+              onSave: async (nameVal, amount) => {
+                fixedCosts[idx] = { name: nameVal, amount };
+                await saveFixedCosts();
+                renderFixedCostsList();
+                renderFixedCostsCard();
+                renderAverages();
+              },
+            });
           });
         });
 
@@ -3293,62 +3679,6 @@
           });
         });
 
-        // Save button
-        list.querySelectorAll("[data-save-idx]").forEach((btn) => {
-          btn.addEventListener("click", async () => {
-            const idx = Number(btn.dataset.saveIdx);
-            const row = btn.closest(".fixed-item");
-            const nameVal = row.querySelector(".fixed-edit-name").value.trim();
-            const rawAmt = row.querySelector(".fixed-edit-amount").value.trim();
-            const amount = parseFloat(
-              rawAmt.replace(/\./g, "").replace(",", "."),
-            );
-            if (!nameVal || isNaN(amount) || amount <= 0) return;
-            fixedCosts[idx] = { name: nameVal, amount };
-            await saveFixedCosts();
-            renderFixedCostsList();
-            renderFixedCostsCard();
-            renderAverages();
-          });
-        });
-
-        // Cancel button
-        list.querySelectorAll("[data-cancel-idx]").forEach((btn) => {
-          btn.addEventListener("click", () => renderFixedCostsList());
-        });
-
-        // Apply BRL mask to amount input when in edit mode
-        const editAmountInput = list.querySelector(".fixed-edit-amount");
-        if (editAmountInput) {
-          editAmountInput.addEventListener("input", applyBrlMask);
-          editAmountInput.focus();
-          editAmountInput.select();
-          // Enter to save, Escape to cancel
-          editAmountInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              e.stopPropagation();
-              list.querySelector("[data-save-idx]").click();
-            }
-            if (e.key === "Escape") {
-              e.stopPropagation();
-              renderFixedCostsList();
-            }
-          });
-          list
-            .querySelector(".fixed-edit-name")
-            .addEventListener("keydown", (e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                e.stopPropagation();
-                editAmountInput.focus();
-              }
-              if (e.key === "Escape") {
-                e.stopPropagation();
-                renderFixedCostsList();
-              }
-            });
-        }
         attachDragDrop(list, fixedCosts, saveFixedCosts, renderFixedCostsList);
       }
 
@@ -3501,24 +3831,15 @@
         const total = getFixedIncomeTotal();
         const items = fixedIncome
           .map((item, idx) => {
-            if (idx === editingIdx) {
-              return `
-                <div class="fixed-item">
-                  <div class="fixed-item-edit-row">
-                    <input type="text" class="fixed-edit-name" value="${escapeHtml(item.name)}" placeholder="Nome" />
-                    <input type="text" class="fixed-edit-amount" value="${item.amount.toFixed(2).replace(".", ",")}" inputmode="numeric" placeholder="0,00" />
-                  </div>
-                  <button class="fixed-save-btn" data-save-idx="${idx}" type="button">✓ Salvar</button>
-                  <button class="fixed-cancel-btn" data-cancel-idx="${idx}" type="button">Cancelar</button>
-                </div>`;
-            }
             return `
               <div class="fixed-item">
                 <span class="drag-handle" title="Arrastar para reordenar">≡</span>
                 <span class="fixed-item-name">${escapeHtml(item.name)}</span>
                 <span class="fixed-item-amount fixed-item-amount--income">${formatCurrency(item.amount)}</span>
-                <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
-                <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                <div class="fixed-item-actions">
+                  <button class="fixed-edit-btn" data-edit-idx="${idx}" type="button">✎ Editar</button>
+                  <button class="fixed-delete-btn" data-delete-idx="${idx}" type="button">✕ Remover</button>
+                </div>
               </div>`;
           })
           .join("");
@@ -3535,7 +3856,18 @@
 
         list.querySelectorAll("[data-edit-idx]").forEach((btn) => {
           btn.addEventListener("click", () => {
-            renderFixedIncomeList(Number(btn.dataset.editIdx));
+            const idx = Number(btn.dataset.editIdx);
+            openFixedItemModal({
+              title: "Editar receita fixa",
+              item: fixedIncome[idx],
+              onSave: async (nameVal, amount) => {
+                fixedIncome[idx] = { name: nameVal, amount };
+                await saveFixedIncome();
+                renderFixedIncomeList();
+                renderFixedIncomeCard();
+                renderAverages();
+              },
+            });
           });
         });
 
@@ -3557,58 +3889,6 @@
           });
         });
 
-        list.querySelectorAll("[data-save-idx]").forEach((btn) => {
-          btn.addEventListener("click", async () => {
-            const idx = Number(btn.dataset.saveIdx);
-            const row = btn.closest(".fixed-item");
-            const nameVal = row.querySelector(".fixed-edit-name").value.trim();
-            const rawAmt = row.querySelector(".fixed-edit-amount").value.trim();
-            const amount = parseFloat(
-              rawAmt.replace(/\./g, "").replace(",", "."),
-            );
-            if (!nameVal || isNaN(amount) || amount <= 0) return;
-            fixedIncome[idx] = { name: nameVal, amount };
-            await saveFixedIncome();
-            renderFixedIncomeList();
-            renderFixedIncomeCard();
-            renderAverages();
-          });
-        });
-
-        list.querySelectorAll("[data-cancel-idx]").forEach((btn) => {
-          btn.addEventListener("click", () => renderFixedIncomeList());
-        });
-
-        const editAmountInput = list.querySelector(".fixed-edit-amount");
-        if (editAmountInput) {
-          editAmountInput.addEventListener("input", applyBrlMask);
-          editAmountInput.focus();
-          editAmountInput.select();
-          editAmountInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              e.stopPropagation();
-              list.querySelector("[data-save-idx]").click();
-            }
-            if (e.key === "Escape") {
-              e.stopPropagation();
-              renderFixedIncomeList();
-            }
-          });
-          list
-            .querySelector(".fixed-edit-name")
-            .addEventListener("keydown", (e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                e.stopPropagation();
-                editAmountInput.focus();
-              }
-              if (e.key === "Escape") {
-                e.stopPropagation();
-                renderFixedIncomeList();
-              }
-            });
-        }
         attachDragDrop(
           list,
           fixedIncome,
