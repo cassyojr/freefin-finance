@@ -91,7 +91,9 @@
 body {
   margin: 0;
   font-family:
+    "Inter",
     system-ui,
+    -apple-system,
     sans-serif;
   background: var(--bg);
   color: var(--text);
@@ -186,7 +188,7 @@ h1 {
   padding: 11px 20px;
   cursor: pointer;
   font: inherit;
-  font-family: system-ui, sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 500;
   transition:
     transform 0.18s ease,
@@ -419,7 +421,7 @@ h1 {
 
 .metric-value {
   margin-top: 10px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Manrope", "Inter", sans-serif;
   font-size: clamp(1.35rem, 1.8vw, 1.75rem);
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -462,7 +464,7 @@ textarea {
   color: var(--text);
   padding: 11px 14px;
   font: inherit;
-  font-family: system-ui, sans-serif;
+  font-family: "Inter", sans-serif;
   line-height: 1.4;
   transition:
     background 0.2s,
@@ -1099,22 +1101,26 @@ textarea {
 }
 
 .fixed-item-edit-row input {
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: none;
-  font: inherit;
-  font-size: 0.95rem;
-  background: var(--surface-container);
-  color: var(--text);
+  width: auto; /* override global width: 100% so flex sizing takes over */
+  height: 44px;
 }
 
-.fixed-item-edit-row input:first-child {
+.fixed-edit-name {
   flex: 1;
+  min-width: 160px;
 }
 
-.fixed-item-edit-row input:last-of-type {
-  width: 130px;
-  text-align: right;
+.fixed-edit-amount {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+/* Hide the native datalist dropdown arrow on all list inputs */
+input[list]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  width: 0;
+  padding: 0;
+  pointer-events: none;
 }
 
 .fixed-save-btn {
@@ -1162,6 +1168,13 @@ textarea {
 }
 
 #fixedIncomeAddBtn {
+  align-self: flex-end;
+  margin-bottom: calc(1.1 * 0.82rem + 10px);
+  flex-shrink: 0;
+}
+
+/* Rule add button — same alignment as fixed-cost add buttons */
+#ruleAddBtn {
   align-self: flex-end;
   margin-bottom: calc(1.1 * 0.82rem + 10px);
   flex-shrink: 0;

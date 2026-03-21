@@ -14,7 +14,6 @@ from __future__ import annotations
 from src.domain.entities import ImportedStatement
 from src.domain.repositories import StatementRepository, SettingsRepository
 from src.infrastructure.parser.pdf_parser import (
-    DEFAULT_CATEGORY_RULES,
     ParseResult,
     parse_pdf,
 )
@@ -35,7 +34,8 @@ class ImportStatementUseCase:
 
     def execute(self, pdf_bytes: bytes, source_file: str) -> ImportedStatement:
         # 1. Parse first to get checksum (parser always computes it)
-        rules = self._settings.get_category_rules() or DEFAULT_CATEGORY_RULES
+        # User rules from DB; empty list means all transactions start as "Outros".
+        rules = self._settings.get_category_rules()
         result: ParseResult = parse_pdf(pdf_bytes, source_file, rules=rules)
 
         # 2. Duplicate guard
