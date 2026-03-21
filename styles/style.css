@@ -1300,9 +1300,9 @@ input[list]::-webkit-calendar-picker-indicator {
 
   .tab-nav {
     border-radius: 18px;
-    align-self: stretch;
+    align-self: flex-start;
     justify-content: flex-start;
-    /* Removed width: 100% to let flex constraints from earlier breakpoints handle it */
+    flex: 1 1 auto; /* Make sure it can shrink */
   }
 
   .tab-btn {
