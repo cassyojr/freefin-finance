@@ -516,8 +516,19 @@
             </button>
           </div>
 
+          <!-- Search -->
+          <div class="rules-search-row" style="margin-top: 16px">
+            <label style="flex: 1; max-width: 360px; margin: 0">
+              <input
+                id="rulesSearchInput"
+                type="text"
+                placeholder="Buscar por palavra-chave ou categoria…"
+              />
+            </label>
+          </div>
+
           <!-- Rules table -->
-          <div id="rulesTableContainer" style="margin-top: 20px"></div>
+          <div id="rulesTableContainer" style="margin-top: 12px"></div>
 
           <div class="hero-actions" style="margin-top: 16px">
             <button class="button-ghost" id="resetRulesBtn" type="button">
@@ -1137,6 +1148,7 @@
       let installmentPageSize = 10;
       let fixedCosts = [];
       let fixedIncome = [];
+      let _rulesSearch = "";
 
       const SECTION_IDS = ["sectionLancamentos", "sectionParcelamentos"];
       const SECTIONS_KEY = "freefin-sections-open";
@@ -1495,6 +1507,14 @@
             reapplyCategories();
             keyEl.value = "";
             catEl.value = "";
+            renderRulesTable();
+          });
+
+        // Category search filter
+        document
+          .getElementById("rulesSearchInput")
+          ?.addEventListener("input", (e) => {
+            _rulesSearch = normalizeText(e.target.value);
             renderRulesTable();
           });
 
@@ -3170,6 +3190,18 @@
         const container = document.getElementById("rulesTableContainer");
         if (!container) return;
 
+        // Apply search filter — always use real indices so edit/save/delete still work
+        const visibleIndices = _activeRules.reduce((acc, rule, idx) => {
+          if (
+            !_rulesSearch ||
+            normalizeText(rule.keyword).includes(_rulesSearch) ||
+            normalizeText(rule.category).includes(_rulesSearch)
+          ) {
+            acc.push(idx);
+          }
+          return acc;
+        }, []);
+
         if (!_activeRules.length && editingIdx === -1) {
           container.innerHTML = `
             <div class="fixed-items-container" id="rulesItemsContainer"></div>
@@ -3179,9 +3211,22 @@
           return;
         }
 
+        if (!visibleIndices.length && editingIdx === -1) {
+          container.innerHTML = `
+            <div class="fixed-items-container" id="rulesItemsContainer"></div>
+            <div class="empty" style="padding: 1.5rem 0.5rem; text-align: center;">
+              Nenhuma regra encontrada para "${escapeHtml(_rulesSearch)}".
+            </div>`;
+          return;
+        }
+
         const categoryOptions = getAllCategoryOptions();
         const rows = _activeRules
           .map((rule, idx) => {
+            // Hide rows that don't match the search (unless currently being edited)
+            if (editingIdx !== idx && _rulesSearch && !visibleIndices.includes(idx)) {
+              return "";
+            }
             if (idx === editingIdx) {
               const dlId = `ruleCatEditList_${idx}`;
               const opts = categoryOptions
