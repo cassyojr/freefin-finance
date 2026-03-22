@@ -1129,6 +1129,7 @@
       let selectedAverageMode = "mes";
       let selectedChartCategory = "";
       let tableSort = { col: "date", dir: "desc" };
+      let reconSortDir = "desc";
       let tablePage = 1;
       let tablePageSize = 10;
       let creditsPage = 1;
@@ -2605,6 +2606,8 @@
           return;
         }
 
+        const isDesc = reconSortDir === "desc";
+
         // Group by year
         const byYear = {};
         for (const s of fileSummaries) {
@@ -2614,9 +2617,17 @@
         }
 
         let bodyHtml = "";
-        for (const year of Object.keys(byYear).sort()) {
+        const sortedYears = Object.keys(byYear).sort();
+        if (isDesc) sortedYears.reverse();
+
+        for (const year of sortedYears) {
           bodyHtml += `<tr class="recon-year-row"><td colspan="6">${escapeHtml(year)}</td></tr>`;
-          for (const summary of byYear[year]) {
+          const sortedEntries = [...byYear[year]].sort((a, b) =>
+            isDesc
+              ? b.statementKey.localeCompare(a.statementKey)
+              : a.statementKey.localeCompare(b.statementKey),
+          );
+          for (const summary of sortedEntries) {
             const diff = Math.abs(summary.diff);
             const statusClass =
               diff <= 0.01
@@ -2641,12 +2652,14 @@
           }
         }
 
+        const sortArrow = isDesc ? " ▼" : " ▲";
+
         elements.reconciliationList.innerHTML = `
           <div class="recon-table-wrap">
           <table class="recon-table">
             <thead>
               <tr>
-                <th>Período</th>
+                <th class="sortable" id="reconSortBtn" style="cursor:pointer;user-select:none">Período${sortArrow}</th>
                 <th>Arquivo</th>
                 <th class="recon-num">Oficial</th>
                 <th class="recon-num">Calculado</th>
@@ -2657,6 +2670,13 @@
             <tbody>${bodyHtml}</tbody>
           </table>
           </div>`;
+
+        document
+          .getElementById("reconSortBtn")
+          ?.addEventListener("click", () => {
+            reconSortDir = reconSortDir === "desc" ? "asc" : "desc";
+            renderReconciliation();
+          });
       }
 
       function renderPeriodSummary() {
