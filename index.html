@@ -2355,7 +2355,7 @@
         });
       }
 
-      function applyFilters() {
+      function applyFilters({ preservePages = false } = {}) {
         const search = normalizeText(elements.searchFilter.value);
         const month = elements.monthFilter.value;
         const year = elements.yearFilter.value;
@@ -2389,9 +2389,15 @@
         renderChart();
         renderReconciliation();
         renderPeriodSummary();
-        tablePage = 1;
-        creditsPage = 1;
-        installmentPage = 1;
+        // Only reset pages on explicit user filter changes; category re-application
+        // and other internal refreshes pass preservePages:true to stay on current page.
+        // renderTable/renderCreditsTable/renderInstallments clamp the page automatically
+        // if the new result count is smaller than the current page.
+        if (!preservePages) {
+          tablePage = 1;
+          creditsPage = 1;
+          installmentPage = 1;
+        }
         renderTable();
         renderCreditsTable(creditTransactions);
         renderInstallments();
@@ -3360,8 +3366,18 @@
           ...item,
           category: categorizeMerchant(item.merchant),
         }));
+        // Snapshot filter selections before hydrateFilters rebuilds the select options.
+        // hydrateSelect preserves values that still exist as options, but if a category
+        // is no longer present in allTransactions its option is removed and the select
+        // falls back to empty. Restoring after hydration keeps the user's intent.
+        const savedMonth = elements.monthFilter.value;
+        const savedYear = elements.yearFilter.value;
+        const savedCategory = elements.categoryFilter.value;
         hydrateFilters();
-        applyFilters();
+        if (savedMonth) elements.monthFilter.value = savedMonth;
+        if (savedYear) elements.yearFilter.value = savedYear;
+        if (savedCategory) elements.categoryFilter.value = savedCategory;
+        applyFilters({ preservePages: true });
       }
 
       function showManualUpload(message) {
