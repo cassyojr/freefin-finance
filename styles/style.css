@@ -1230,6 +1230,12 @@ textarea {
   justify-content: flex-end;
 }
 
+/* ── Category search ───────────────────────────────────────────────────── */
+.rules-search-row {
+  display: flex;
+  align-items: flex-end;
+}
+
 /* ── Fixed costs & income ──────────────────────────────────────────────── */
 .fixed-add-row {
   display: flex;
