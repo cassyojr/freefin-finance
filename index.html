@@ -3374,9 +3374,12 @@
         const savedYear = elements.yearFilter.value;
         const savedCategory = elements.categoryFilter.value;
         hydrateFilters();
-        if (savedMonth) elements.monthFilter.value = savedMonth;
-        if (savedYear) elements.yearFilter.value = savedYear;
-        if (savedCategory) elements.categoryFilter.value = savedCategory;
+        // Always restore unconditionally — empty string ("") means the user
+        // explicitly chose "TODOS/Todas" and must be respected.
+        // The conditional guard was incorrectly treating "" as "not set".
+        elements.monthFilter.value = savedMonth;
+        elements.yearFilter.value = savedYear;
+        elements.categoryFilter.value = savedCategory;
         applyFilters({ preservePages: true });
       }
 
