@@ -3230,7 +3230,11 @@
         const rows = _activeRules
           .map((rule, idx) => {
             // Hide rows that don't match the search (unless currently being edited)
-            if (editingIdx !== idx && _rulesSearch && !visibleIndices.includes(idx)) {
+            if (
+              editingIdx !== idx &&
+              _rulesSearch &&
+              !visibleIndices.includes(idx)
+            ) {
               return "";
             }
             if (idx === editingIdx) {
