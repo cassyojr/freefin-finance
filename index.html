@@ -1055,7 +1055,6 @@
               body: fd,
             });
             if (resp.status === 409) {
-              console.log(`[${source.name}] Já importado, ignorando.`);
               continue; // already in DB — fine
             }
             if (!resp.ok) {
@@ -1063,7 +1062,7 @@
               throw new Error(err.detail || `Falha ao importar ${source.name}`);
             }
           } catch (err) {
-            console.error(`Falha ao importar ${source.name}:`, err);
+            console.error("Falha ao importar PDF:", err);
             setStatusMessage(
               `Falha ao importar ${source.name}: ${err.message}`,
               "error",
@@ -1827,7 +1826,7 @@
             if (!bytes) continue;
             loaded.push({ name: pdfName, bytes });
           } catch (error) {
-            console.warn("Falha ao carregar PDF do projeto:", pdfName, error);
+            console.error("Falha ao carregar PDF do projeto:", error);
           }
         }
 
@@ -1934,13 +1933,9 @@
             diff: parsedTotal - officialTotal,
           };
 
-          console.log(
-            `[${source.name}] Oficial=${officialTotal} | Calculado=${parsedTotal}`,
-          );
-
           return { transactions, summary };
         } catch (error) {
-          console.error("Erro ao processar PDF:", source.name, error);
+          console.error("Erro ao processar PDF:", error);
           setStatusMessage(
             `Falha ao processar ${source.name}: ${error.message}`,
             "error",
@@ -3116,7 +3111,7 @@
             .join("\n");
           renderRulesTable();
         } catch (err) {
-          console.warn("Could not load category rules from backend:", err);
+          console.error("Could not load category rules from backend:", err);
         }
       }
 
@@ -3310,11 +3305,8 @@
           }
           await saveRulesToBackend(stored);
           localStorage.setItem("expense-category-rules-migrated", "1");
-          console.log(
-            "[migration] category rules migrated from localStorage to DB",
-          );
         } catch (err) {
-          console.warn("[migration] Could not migrate category rules:", err);
+          console.error("[migration] Could not migrate category rules:", err);
         }
       }
 
@@ -3628,7 +3620,7 @@
             fixedCosts = data.map((c) => ({ name: c.label, amount: c.amount }));
             return;
           } catch (err) {
-            console.warn("Could not load fixed costs from backend:", err);
+            console.error("Could not load fixed costs from backend:", err);
           }
         }
         // Offline fallback
@@ -3681,11 +3673,8 @@
             ),
           });
           localStorage.setItem("expense-fixed-costs-migrated", "1");
-          console.log(
-            "[migration] fixed costs migrated from localStorage to DB",
-          );
         } catch (err) {
-          console.warn("[migration] Could not migrate fixed costs:", err);
+          console.error("[migration] Could not migrate fixed costs:", err);
         }
       }
 
@@ -3862,7 +3851,7 @@
             }));
             return;
           } catch (err) {
-            console.warn("Could not load fixed income from backend:", err);
+            console.error("Could not load fixed income from backend:", err);
           }
         }
         // Offline fallback
@@ -3918,11 +3907,8 @@
             ),
           });
           localStorage.setItem("expense-fixed-income-migrated", "1");
-          console.log(
-            "[migration] fixed income migrated from localStorage to DB",
-          );
         } catch (err) {
-          console.warn("[migration] Could not migrate fixed income:", err);
+          console.error("[migration] Could not migrate fixed income:", err);
         }
       }
 
